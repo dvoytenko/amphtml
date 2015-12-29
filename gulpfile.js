@@ -91,6 +91,7 @@ function buildExtensions(options) {
   buildExtension('amp-twitter', '0.1', false, options);
   buildExtension('amp-vine', '0.1', false, options);
   buildExtension('amp-youtube', '0.1', false, options);
+  buildExtension('amp-worker-component', '0.1', false, options);
 }
 
 
@@ -277,6 +278,7 @@ function dist() {
   compile(false, true);
   buildExtensions({minify: true});
   buildExperiments({minify: true, watch: false});
+  buildReactWorker({minify: true, watch: false});
 }
 
 /**
@@ -522,6 +524,50 @@ function buildExperiments(options) {
 
 
 /**
+ * Build the specified worker.
+ *
+ * @param {!Object} options
+ */
+function buildReactWorker(options) {
+  options = options || {};
+  console.log('Bundling React worker');
+  var path = 'workers/react';
+  var jsPath = path + '/amp-react.js';
+
+  var watch = options.watch;
+  if (watch === undefined) {
+    watch = argv.watch || argv.w;
+  }
+
+  // Building extensions is a 2 step process because of the renaming
+  // and CSS inlining. This watcher watches the original file, copies
+  // it to the destination and adds the CSS.
+  if (watch) {
+    // Do not set watchers again when we get called by the watcher.
+    var copy = Object.create(options);
+    copy.watch = false;
+    gulpWatch(path + '/*', function() {
+      buildReactWorker(copy);
+    });
+  }
+
+  var js = fs.readFileSync(jsPath, 'utf8');
+  var builtName = 'amp-react.max.js';
+  var minifiedName = 'amp-react.js';
+  return gulp.src(path + '/*.js')
+      .pipe(file(builtName, js))
+      .pipe(gulp.dest('build/workers/'))
+      .on('end', function() {
+        compileJs('build/workers/', builtName, 'dist/workers/', {
+          watch: false,
+          minify: options.minify || argv.minify,
+          minifiedName: minifiedName,
+        });
+      });
+}
+
+
+/**
  * Gulp tasks
  */
 gulp.task('build', 'Builds the AMP library', build);
@@ -531,3 +577,4 @@ gulp.task('dist', 'Build production binaries', dist);
 gulp.task('extensions', 'Build AMP Extensions', buildExtensions);
 gulp.task('watch', 'Watches for changes in files, re-build', watch);
 gulp.task('build-experiments', 'Builds experiments.html/js', buildExperiments);
+gulp.task('build-react-worker', 'Builds React worker', buildReactWorker);

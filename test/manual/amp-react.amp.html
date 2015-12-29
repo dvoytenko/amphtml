@@ -1,0 +1,34 @@
+<!doctype html>
+<html ⚡>
+<head>
+  <meta charset="utf-8">
+  <title>AMP #0</title>
+  <link rel="canonical" href="amps.html" >
+  <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+  <style amp-custom>
+    body {
+    }
+    article {
+      display: block;
+      margin: 8px;
+    }
+    amp-worker-component {
+      background: #eee;
+    }
+  </style>
+  <style>body {opacity: 0}</style><noscript><style>body {opacity: 1}</style></noscript>
+  <script async src="../../dist/amp.js"></script>
+  <script async custom-element="amp-worker-component" src="../../dist/v0/amp-worker-component-0.1.max.js"></script>
+</head>
+<body>
+<article>
+  <h1>React</h1>
+
+  <amp-worker-component width=100 height=100 layout=responsive
+      src="amp-react.worker.js">
+  </amp-worker-component>
+
+</article>
+</body>
+</html>
+

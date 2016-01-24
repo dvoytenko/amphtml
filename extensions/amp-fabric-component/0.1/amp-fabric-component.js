@@ -81,6 +81,10 @@ class AmpFabricComponent extends AMP.BaseElement {
     });
     this.canvas_.add(rect);
 
+    this.canvas_.on('mouse:down', function(opts) {
+      console.log('click!');
+    });
+
     // TODO(dvoytenko): do this via a non-allow-same-origin IFRAME to enable
     // CORS workers via proxy?
     return new Promise((resolve, reject) => {

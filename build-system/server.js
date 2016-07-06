@@ -62,9 +62,9 @@ app.use('/pwa', function(req, res, next) {
   });
 });
 
-app.use('/examples', function(req, res) {
-  res.redirect('/examples.build');
-});
+// app.use('/examples', function(req, res) {
+//   res.redirect('/examples.build');
+// });
 
 app.use('/api/show', function(req, res) {
   res.json({

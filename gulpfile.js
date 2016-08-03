@@ -99,6 +99,7 @@ function buildExtensions(options) {
   buildExtension('amp-vimeo', '0.1', false, options);
   buildExtension('amp-vine', '0.1', false, options);
   buildExtension('amp-viz-vega', '0.1', false, options);
+  buildExtension('amp-vrmode', '0.1', true, options);
   buildExtension('amp-google-vrview-image', '0.1', false, options);
   buildExtension('amp-youtube', '0.1', false, options);
 }

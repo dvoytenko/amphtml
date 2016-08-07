@@ -15,6 +15,7 @@
  */
 
 import {ThreeView} from './three-view';
+import * as tr from '../../../src/transition';
 
 
 export class GalleryView extends ThreeView {
@@ -103,6 +104,51 @@ export class GalleryView extends ThreeView {
       this.scene.add(group);
       imageMesh[i] = group;
     }
+
+    this.getElement().addEventListener('click', () => {
+      this.showPokes_();
+    });
+  }
+
+  /** @private */
+  showPokes_() {
+    console.log('SHOW POKES!!!');
+
+    const loader = new THREE.ObjectLoader();
+    // /models/dragonite/dragonite-pokemon-go.json
+    // /models/pokeball/pokeball-vray.json
+    // /models/squirtle/squirtle-pokemon-go.json
+    console.log('try to load');
+    loader.load('/examples/model3d/dragonite/dragonite-pokemon-go.json', obj => {
+      console.log('loaded: ', obj);
+
+      obj.position.x = 0;
+      obj.position.y = -2;
+      obj.position.z = -8;
+
+      obj.rotation.x = 0.2;
+
+      const startRot = Math.PI * 0.9;
+      obj.rotation.y = startRot;
+
+      const startScale = 0.02;
+      obj.scale.x = obj.scale.y = obj.scale.z = startScale;
+      this.scene.add(obj);
+
+      const scaler = tr.numeric(startScale, 0.3);
+      const rotator = tr.numeric(startRot, startRot + Math.PI * 2);
+      this.startAnimation(time => {
+        const t2 = (time <= 0.5 ? time / 0.5 : (1 - time) / 0.5);
+        // obj.rotation.y = Math.PI * 2 * time;
+        // const scale = startScale + (endScale - startScale) *
+        //     (time <= 0.5 ? time / 0.5 : (1 - time) / 0.5);
+        obj.rotation.y = rotator(time);
+        obj.scale.x = obj.scale.y = obj.scale.z = scaler(t2);
+        if (time == 1) {
+          this.scene.remove(obj);
+        }
+      }, 2.0, 'ease-in-out');
+    });
   }
 }
 

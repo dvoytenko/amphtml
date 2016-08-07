@@ -54,14 +54,6 @@ class AmpVrmode extends AMP.BaseElement {
       this.activate();
     });
 
-    this.toggleButton_ = this.win.document.createElement('button');
-    this.toggleButton_.classList.add('-amp-vrmode-toggle');
-    this.toggleButton_.textContent = 'Start';
-    this.container_.appendChild(this.toggleButton_);
-    this.toggleButton_.addEventListener('click', () => {
-      this.toggleRunning_();
-    });
-
     /**
      * @return {!Promise}
      */
@@ -162,16 +154,6 @@ class AmpVrmode extends AMP.BaseElement {
     /** @private @const {!ViewManager} */
     this.viewManager_ = new ViewManager(this.win, this.container_);
     this.viewManager_.openPush(new GalleryView());
-  }
-
-  /**
-   */
-  toggleRunning_() {
-    this.running_ = !this.running_;
-    this.toggleButton_.textContent = this.running_ ? 'Stop' : 'Start';
-    if (this.running_) {
-      this.animate_();
-    }
   }
 }
 

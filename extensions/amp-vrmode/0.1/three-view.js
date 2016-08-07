@@ -16,6 +16,7 @@
 
 import {View} from './view';
 import {dev} from '../../../src/log';
+import {getCurve} from '../../../src/curve';
 import {vsyncFor} from '../../../src/vsync';
 
 
@@ -36,6 +37,9 @@ export class ThreeView extends View {
 
     /** @private @const {!THREE.Clock} */
     this.clock_ = new THREE.Clock();
+
+    /** @private @const {!Array<!AnimationDef>} */
+    this.animations_ = [];
 
     /** @private @const {!THREE.WebGLRenderer} */
     this.renderer_ = new THREE.WebGLRenderer();
@@ -121,6 +125,7 @@ export class ThreeView extends View {
         this.controls.update(delta);
       }
       this.update(delta);
+      this.runAnimations_();
       this.effect_.render(this.scene, this.camera);
       if (this.running_) {
         this.animate_();
@@ -162,4 +167,64 @@ export class ThreeView extends View {
    * @protected
    */
   update(delta) {}
+
+  /**
+   * @param {function(number)} callback
+   * @param {number} duration In seconds.
+   * @param {!CurveDef=} opt_curve
+   * @protected
+   */
+  startAnimation(callback, duration, opt_curve) {
+    if (duration <= 0) {
+      callback(1);
+      return;
+    }
+    this.animations_.push({
+      callback: callback,
+      duration: duration,
+      curve: opt_curve ? getCurve(opt_curve) : null,
+      startTime: this.clock_.getElapsedTime(),
+    });
+  }
+
+  /** @private */
+  runAnimations_() {
+    if (this.animations_.length == 0) {
+      return;
+    }
+    const now = this.clock_.getElapsedTime();
+    let toRemove = null;
+    for (let i = 0; i < this.animations_.length; i++) {
+      const anim = this.animations_[i];
+      const time = Math.min((now - anim.startTime) / anim.duration, 1);
+      const curveTime = Math.min(
+          (time >= 1 || !anim.curve) ? time : anim.curve(time),
+          1);
+      anim.callback(curveTime);
+      if (time >= 1) {
+        if (toRemove) {
+          toRemove.push(i);
+        } else {
+          toRemove = [i];
+        }
+      }
+    }
+    if (toRemove) {
+      for (let i = toRemove.length - 1; i >= 0; i--) {
+        const index = toRemove[i];
+        this.animations_.splice(index, 1);
+      }
+    }
+  }
 }
+
+
+/**
+ * @typedef {{
+ *   duration: number,
+ *   curve: (function(numnber):number|null),
+ *   callback: function(number),
+ *   startTime: number,
+ * }}
+ */
+let AnimationDef;

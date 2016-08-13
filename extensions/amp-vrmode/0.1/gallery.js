@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import {BasicImageView} from './basic-image-view';
 import {ThreeView} from './three-view';
 import {toArray} from '../../../src/types';
 import * as tr from '../../../src/transition';
@@ -234,10 +235,8 @@ export class GalleryView extends ThreeView {
     this.startAnimation(time => {
       const t = time;
       this.camera.position.set(x(t), y(t), z(t));
-      if (t > 0.8) {
-        // XXX: navigate away
-      }
     }, 2.0, 'ease-in-out', () => {
+      this.viewManager.openPush(new BasicImageView());
       console.log('reset back to ', oldPos);
       this.camera.position.set(oldPos.x, oldPos.y, oldPos.z);
       this.setControlsState(true);

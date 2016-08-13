@@ -15,6 +15,7 @@
  */
 
 import {dev} from '../../../src/log';
+import {historyFor} from '../../../src/history';
 import {toggle} from '../../../src/style';
 
 
@@ -25,6 +26,9 @@ export class ViewManager {
   constructor(win, container) {
     /** @const {!Window} */
     this.win = win;
+
+    /** @const {!History} */
+    this.history_ = historyFor(win);
 
     /** @private @const {!Element} */
     this.container_ = container;
@@ -41,6 +45,11 @@ export class ViewManager {
    */
   openPush(view) {
     this.openView_(view);
+    if (this.stack_.length > 1) {
+      this.history_.push(() => {
+        this.close(view);
+      });
+    }
   }
 
   /**

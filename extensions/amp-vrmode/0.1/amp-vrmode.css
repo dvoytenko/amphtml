@@ -43,6 +43,9 @@ amp-vrmode {
   z-index: 999 !important;
   bottom: 10px;
   right: 10px;
+  border: 1px solid black;
+  background: #fff;
+  padding: 16px;
 }
 
 .-amp-vrmode-toggle {

@@ -1322,6 +1322,13 @@ function createBaseAmpElementProto(win) {
     }
   };
 
+  /**
+   * @return {?VrInfo}
+   */
+  ElementProto.getVrInfo = function() {
+    return this.implementation_.getVrInfo();
+  };
+
   return ElementProto;
 }
 

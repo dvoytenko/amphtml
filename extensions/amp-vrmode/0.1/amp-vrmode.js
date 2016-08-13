@@ -78,6 +78,7 @@ class AmpVrmode extends AMP.BaseElement {
             addScript('/node_modules/three/examples/js/controls/DeviceOrientationControls.js'),
             addScript('/node_modules/three/examples/js/controls/OrbitControls.js'),
             addScript('/node_modules/three/examples/js/controls/TrackballControls.js'),
+            addScript('/node_modules/three/examples/js/renderers/Projector.js'),
           ]);
         }).then(() => {
           console.log('THREE loaded.');

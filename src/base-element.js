@@ -769,4 +769,11 @@ export class BaseElement {
    * @protected
    */
   onLayoutMeasure() {}
+
+  /**
+   * @return {?VrInfo}
+   */
+  getVrInfo() {
+    return null;
+  }
 };

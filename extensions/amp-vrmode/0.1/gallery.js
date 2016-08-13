@@ -15,6 +15,7 @@
  */
 
 import {ThreeView} from './three-view';
+import {toArray} from '../../../src/types';
 import * as tr from '../../../src/transition';
 
 
@@ -36,6 +37,9 @@ export class GalleryView extends ThreeView {
     const camera = new THREE.PerspectiveCamera(90, 1, 0.001, 700);
     cursor3d.lookAt(camera.position);
     camera.add(cursor3d);
+
+    this.raycaster = new THREE.Raycaster();
+
     return camera;
   }
 
@@ -71,6 +75,18 @@ export class GalleryView extends ThreeView {
         sphereMaterial);
     this.scene.add(sphere);
 
+    this.candidates_ = toArray(document.querySelectorAll(
+        'amp-img,amp-video,amp-twitter,amp-youtube,blockquote'));
+    console.log('candidates: ', this.candidates_.length, this.candidates_);
+    this.vrInfo_ = [];
+    for (let i = 0; i < this.candidates_.length; i++) {
+      const candidate = this.candidates_[i];
+      const vrInfo = this.getVrInfo_(candidate);
+      this.vrInfo_.push(vrInfo);
+    }
+    console.log('vr info: ', this.vrInfo_);
+
+    this.intersectables = [];
     const images = [
       '/93-b1dDH2pOW4e2HWxVlO5j_Ll1iHbLKjrDKUl4k8P2QZzwBMztxDWgWDn-GggxFgACb2P4h78rrM65uIeik9R3TYUIdHFuHTm-dxY0Bu864I2Qb20qLR9PHyPZmUhwfwUVzyC-35U_LqlCgY5pz-pUdUYGNA0UBt56cLoeJZTrueJJfDJTCqhoyOnDHeWOaB5R_9G7m9deWqV9CWY4lI6DzsQ2g8-piw8Z_Fo0n1T4lHtXExuAsHgqGe6v7g3CxKsG0j9A330asb1Xb-1XYDrRZNem5gEGXDu24dvG6plltGdDYQLFRoAjQ2RxbIvvb6BUws1TTSy0-qaaDKVYmTale2-S-cqYSTNHL915QSoXXkinNqP6Yet8YjmzOX9R8utDFJ1Y-9ubCGF89UnCR_grIKy1wkEs7LmljMpgyWHgX_u8p1573QGISi2I_Mr0rGZ6zNWGq2uw8CmiVQwNKYgwi7zGzUy3_u_SLrjzxoUqa5oRvmGKhBjrR-nl4P6UPvC3XHJ5ivru50faETu67AGDQfJsz0hTQFc5bmEe-x94DrR4Vm8JUopwfiYlQi1lYCSRZSnZC1Qd7DfEo4Hx2py2KXLA0g48',
       '/Nf0HFZgIKJRa8p9xNaWOteK6J7CZwxaDBZEo1Hr4HeB9yqVMoaA2c-kFWR5qvpglmj3eesObKr8c8q5FRUpaey5cRbvyO0NrFLA8B7A81PdS6PVjlblyzxFj4DIsxZ6XvyrnsJxI0VHqSOIuZKf5VuZ1udTNP5AdCtqmVYV8DGNysFiZ_LMybB8fQVFjGjVDvXIwQ-LXpJg2zXCjgPITfW2iAkM_ia8Pu8pxsLAlbjIMeIybSeWeyRBvoAKiJpPsHHq-8SiEZal1kDNxLgLJgpJHxgk6Id6qvZhieEnAX9rqmEBIIBaibNFwedrKYxiCBgsbC1rr5dY197xGlW6_2TTdshg8zaIe2K_BChjJZ0u_duQRhoind8fNKfa9B3zRkBRqEOzi0uNQnmDQ4IN5QKMRQD4ZpIdSyy1SKq5vJDWsgDJzy33cSQzpH-O6WYPpZCW4uIGIkuSWi6SgWmffuFKVXTxO3jBBUnG4OPt22mltKZBDbvoESUYzeR6vYJxD_7FeaK6gStigp3aO9cHoxMWUErwUOzpH0Sorcnm-zfPIZhzbbyDzT75c4NMRwUvYP2L1w7FgZYPTd2g7S5RquBW-5KLAND8',
@@ -103,10 +119,128 @@ export class GalleryView extends ThreeView {
 
       this.scene.add(group);
       imageMesh[i] = group;
+      this.intersectables.push(cubeMesh);
+
+      cubeMesh.group = group;
+      cubeMesh.setSelected = function(value) {
+        const scale = value ? 1.2 : 1.0;
+        group.scale.set(scale, scale, scale);
+      };
     }
 
-    this.getElement().addEventListener('click', () => {
+    this.getElement().addEventListener('click', this.handleClick_.bind(this));
+
+
+    // XXX: skydome
+    (() => {
+      console.log('load sky');
+      var geometry = new THREE.SphereGeometry(50, 32, 32);
+      var uniforms = {
+        texture: {
+          type: 't',
+          value: THREE.ImageUtils.loadTexture(
+              'https://lh4.googleusercontent.com/-okOlNNHeoOc/VbYyrlFYFII/AAAAAAABYdA/La-3j3c-QQI/w1002-h557-no/PANO_20150726_171347%257E2.jpg')
+        }
+      };
+
+      var material = new THREE.ShaderMaterial( {
+        uniforms:       uniforms,
+        vertexShader:   `
+            varying vec2 vUV;
+            void main() {
+              vUV = uv;
+              vec4 pos = vec4(position, 1.0);
+              gl_Position = projectionMatrix * modelViewMatrix * pos;
+            }
+            `,
+        fragmentShader: `
+            uniform sampler2D texture;
+            varying vec2 vUV;
+            void main() {
+              vec4 sample = texture2D(texture, vUV);
+              gl_FragColor = vec4(sample.xyz, sample.w);
+            }
+            `,
+      });
+
+      var skyBox = new THREE.Mesh(geometry, material);
+      skyBox.scale.set(-1, 1, 1);
+      skyBox.eulerOrder = 'XZY';
+      skyBox.renderDepth = 50.0;
+      this.scene.add(skyBox);
+    });
+  }
+
+  findIntersections() {
+    const TTL = 100;
+
+    /* option 1
+    const gaze = new THREE.Vector3(0, 0, -1);
+    gaze.unproject(this.camera);
+    this.raycaster.set(
+      this.camera.position,
+      gaze.sub(this.camera.position).normalize()
+    );
+    const intersects = this.raycaster.intersectObjects(this.intersectables);
+    */
+
+    /* option 2 */
+    const directionVector = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
+    const raycaster = new THREE.Raycaster(this.camera.position, directionVector.normalize());
+    const intersects = raycaster.intersectObjects(this.intersectables);
+
+    const selected = intersects.length > 0 ? intersects[0].object : null;
+    if (selected != this.selected) {
+      if (this.selected) {
+        this.selected.setSelected(false);
+      }
+      this.selected = selected;
+      if (this.selected) {
+        this.selected.setSelected(true);
+        this.cursor.object3d.scale.set(1.1, 1.1, 1.1);
+        navigator.vibrate(30);
+        console.log('new selected: ', this.selected);
+      } else {
+        this.cursor.object3d.scale.set(1, 1, 1);
+        console.log('selected reset');
+      }
+    }
+  }
+
+  /** @private */
+  handleClick_() {
+    console.log('CLICK');
+    if (!this.controlsState) {
+      return;
+    }
+
+    if (!this.selected) {
       this.showPokes_();
+      return;
+    }
+
+    const obj = this.selected.group || this.selected;
+    const oldPos = {
+      x: this.camera.position.x,
+      y: this.camera.position.y,
+      z: this.camera.position.z
+    };
+    const newPos = obj.position;
+    console.log('zoom in: ', obj, oldPos, newPos);
+    const x = tr.numeric(oldPos.x, newPos.x);
+    const y = tr.numeric(oldPos.y, newPos.y);
+    const z = tr.numeric(oldPos.z, newPos.z);
+    this.setControlsState(false);
+    this.startAnimation(time => {
+      const t = time;
+      this.camera.position.set(x(t), y(t), z(t));
+      if (t > 0.8) {
+        // XXX: navigate away
+      }
+    }, 2.0, 'ease-in-out', () => {
+      console.log('reset back to ', oldPos);
+      this.camera.position.set(oldPos.x, oldPos.y, oldPos.z);
+      this.setControlsState(true);
     });
   }
 
@@ -149,6 +283,47 @@ export class GalleryView extends ThreeView {
         }
       }, 2.0, 'ease-in-out');
     });
+  }
+
+  /**
+   * @param {!Element} element
+   * @return {!VrInfo}
+   * @private
+   */
+  getVrInfo_(element) {
+    if (element.getVrInfo) {
+      const vrInfo = element.getVrInfo();
+      if (vrInfo) {
+        return vrInfo;
+      }
+    }
+
+    if (element.tagName == 'BLOCKQUOTE') {
+      const text = element.textContent;
+      const snippet = text.length > 50 ? text.substring(0, 50) + '...' : text;
+      return {
+        type: 'BLOCKQUOTE',
+        playable: false,
+        thumbImage: null,
+        thumbText: `\u00AB${snippet}\u00BB`,
+        source: text,
+      };
+    }
+
+    return {
+      type: 'UNKNOWN',
+      playable: false,
+      thumbImage: null,
+      thumbText: 'Unknown',
+      source: 'Unknown',
+    };
+  }
+
+  /** @override */
+  update() {
+    if (this.controlsState) {
+      this.findIntersections();
+    }
   }
 }
 

@@ -135,6 +135,17 @@ export class AmpImg extends BaseElement {
       this.toggleFallback(true);
     });
   }
+
+  /** @override */
+  getVrInfo() {
+    return {
+      type: 'IMG',
+      playable: false,
+      thumbImage: this.srcset_.select(320, 1).url,
+      thumbText: null,
+      source: this.srcset_.select(1024, 2).url,
+    };
+  }
 };
 
 /**

@@ -71,6 +71,9 @@ export class ThreeView extends View {
     /** @protected @const {?THREE.Controls} */
     this.controls = this.createControls(this.renderElement_);
 
+    /** @protected {boolean} */
+    this.controlsState = true;
+
     this.constructScene();
 
     return this.renderElement_;
@@ -121,7 +124,7 @@ export class ThreeView extends View {
       this.animating_ = false;
       const delta = this.clock_.getDelta();
       this.camera.updateProjectionMatrix();
-      if (this.controls) {
+      if (this.controls && this.controlsState) {
         this.controls.update(delta);
       }
       this.update(delta);
@@ -169,12 +172,21 @@ export class ThreeView extends View {
   update(delta) {}
 
   /**
+   * @param {boolean} state
+   * @protected
+   */
+  setControlsState(state) {
+    this.controlsState = state;
+  }
+
+  /**
    * @param {function(number)} callback
    * @param {number} duration In seconds.
    * @param {!CurveDef=} opt_curve
+   * @param {function()=} opt_onDone
    * @protected
    */
-  startAnimation(callback, duration, opt_curve) {
+  startAnimation(callback, duration, opt_curve, opt_onDone) {
     if (duration <= 0) {
       callback(1);
       return;
@@ -183,6 +195,7 @@ export class ThreeView extends View {
       callback: callback,
       duration: duration,
       curve: opt_curve ? getCurve(opt_curve) : null,
+      onDone: opt_onDone || null,
       startTime: this.clock_.getElapsedTime(),
     });
   }
@@ -206,6 +219,9 @@ export class ThreeView extends View {
           toRemove.push(i);
         } else {
           toRemove = [i];
+        }
+        if (anim.onDone) {
+          anim.onDone();
         }
       }
     }

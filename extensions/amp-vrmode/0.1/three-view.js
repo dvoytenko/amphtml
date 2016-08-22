@@ -51,9 +51,9 @@ export class ThreeView extends View {
     this.renderElement_ = this.renderer_.domElement;
 
     /** @private @const {!THREE.WebGLRenderer} */
-    this.effect_ = this.renderer_;
-    // TODO(dvoytenko): enable stereo effect:
-    // `new THREE.StereoEffect(this.renderer_)`
+    this.effect_ = this.viewManager.stereo ?
+        new THREE.StereoEffect(this.renderer_) :
+        this.renderer_;
 
     /** @private {number} */
     this.width_ = 0;
@@ -100,6 +100,16 @@ export class ThreeView extends View {
     }
     this.running_ = false;
     this.clock_.stop();
+  }
+
+  /** @return {number} */
+  getWidth() {
+    return this.width_;
+  }
+
+  /** @return {number} */
+  getHeight() {
+    return this.height_;
   }
 
   /** @private */

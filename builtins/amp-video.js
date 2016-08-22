@@ -103,6 +103,17 @@ export function installVideo(win) {
     isVideoSupported_() {
       return !!this.video_.play;
     }
+
+    /** @override */
+    getVrInfo() {
+      return {
+        type: 'VIDEO',
+        playable: true,
+        thumbImage: this.element.getAttribute('poster'),
+        thumbText: null,
+        source: this.element.getAttribute('src'),
+      };
+    }
   }
 
   registerElement(win, 'amp-video', AmpVideo);

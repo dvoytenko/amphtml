@@ -17,17 +17,57 @@
 import {ThreeView} from './three-view';
 import {View} from './view';
 
-export class BasicImageView extends View {
+export class BasicImageView extends ThreeView {
 
-  /** @override */
-  build() {
-    this.element = document.createElement('div');
-    this.element.textContent = 'Not implemented';
+  constructor(vrInfo) {
+    super();
+    /** @const {!VrInfo} */
+    this.vrInfo = vrInfo;
+    /** @const {number} */
+    this.perspective = 12;
   }
 
   /** @override */
-  getElement() {
-    return this.element;
+  createCamera() {
+    const camera = new THREE.PerspectiveCamera(90, 1, 0.001, 700);
+    return camera;
   }
 
+  /** @override */
+  constructScene() {
+    // Fog
+    this.scene.fog = new THREE.Fog(0xffffff, 2000, 10000);
+
+    // Lighting
+    const light = new THREE.DirectionalLight( 0xffffff );
+    light.position.set( 0, 1, 1 ).normalize();
+    this.scene.add(light);
+
+    // Image
+    const geometry = new THREE.PlaneGeometry(1, 1 / this.vrInfo.aspect);
+    const material = new THREE.MeshPhongMaterial({
+      map: THREE.ImageUtils.loadTexture(this.vrInfo.source)
+    });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.position.x = 0;
+    mesh.position.y = 0;
+    mesh.position.z = 0;
+    mesh.lookAt(this.camera.position);
+    this.scene.add(mesh);
+    /** @private @const {!THREE.Mesh} */
+    this.mesh_ = mesh;
+
+    this.getElement().addEventListener('click', this.handleClick_.bind(this));
+  }
+
+  /** @override */
+  resize(width, height) {
+    // const dist = Math.min(width, height * this.vrInfo.aspect);
+    this.mesh_.position.z = -1;
+  }
+
+  /** @private */
+  handleClick_() {
+    this.viewManager.close(this);
+  }
 }

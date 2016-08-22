@@ -39,7 +39,7 @@ amp-vrmode {
 }
 
 .amp-vrmode-button {
-  position: fixed !important;
+  --position: fixed !important;
   z-index: 999 !important;
   bottom: 10px;
   right: 10px;

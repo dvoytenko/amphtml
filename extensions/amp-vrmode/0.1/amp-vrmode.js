@@ -49,7 +49,8 @@ class AmpVrmode extends AMP.BaseElement {
     const startButton = this.win.document.createElement('button');
     startButton.classList.add('amp-vrmode-button');
     startButton.textContent = 'VRMODE';
-    this.win.document.body.appendChild(startButton);
+    this.win.document.body.insertBefore(startButton,
+        this.win.document.body.firstElementChild);
     startButton.addEventListener('click', () => {
       this.activate();
     });
@@ -72,7 +73,7 @@ class AmpVrmode extends AMP.BaseElement {
     this.threePromise_ =
         addScript('/node_modules/three/build/three.js').then(() => {
           return Promise.all([
-            addScript('https://toji.github.io/webvr-samples/js/third-party/webvr-polyfill.js'),
+            //XXX addScript('https://toji.github.io/webvr-samples/js/third-party/webvr-polyfill.js'),
             addScript('/node_modules/three/examples/js/effects/StereoEffect.js'),
             addScript('/node_modules/three/examples/js/effects/VREffect.js'),
             addScript('/node_modules/three/examples/js/controls/DeviceOrientationControls.js'),
@@ -153,7 +154,8 @@ class AmpVrmode extends AMP.BaseElement {
    */
   construct_() {
     /** @private @const {!ViewManager} */
-    this.viewManager_ = new ViewManager(this.win, this.container_);
+    this.viewManager_ = new ViewManager(this.win, this.container_,
+        /* stereo */ true);
     this.viewManager_.openPush(new GalleryView());
   }
 }

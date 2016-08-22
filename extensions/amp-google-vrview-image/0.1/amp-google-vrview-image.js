@@ -111,6 +111,17 @@ class AmpGoogleVrviewImage extends AMP.BaseElement {
 
     return loadPromise(iframe);
   }
+
+  /** @override */
+  getVrInfo() {
+    return {
+      type: 'GVR',
+      playable: false,
+      thumbImage: null, // XXX this.imageSrc_,
+      thumbText: null,
+      source: this.imageSrc_,
+    };
+  }
 }
 
 AMP.registerElement('amp-google-vrview-image', AmpGoogleVrviewImage);

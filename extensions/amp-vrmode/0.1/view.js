@@ -23,9 +23,12 @@ import {toggle} from '../../../src/style';
  */
 export class ViewManager {
 
-  constructor(win, container) {
+  constructor(win, container, stereo) {
     /** @const {!Window} */
     this.win = win;
+
+    /** @const {boolean} */
+    this.stereo = stereo;
 
     /** @const {!History} */
     this.history_ = historyFor(win);
@@ -38,6 +41,18 @@ export class ViewManager {
 
     /** @private @const {!Element} */
     this.elements_ = [];
+  }
+
+  /**
+   * @param {!View} view
+   */
+  initView(view) {
+    const element = view.buildIfNeeded(this);
+    dev.assert(element);
+    toggle(element, false);
+    if (!element.parentElement) {
+      this.container_.appendChild(element);
+    }
   }
 
   /**
@@ -79,12 +94,7 @@ export class ViewManager {
    * @private
    */
   openView_(view) {
-    const element = view.buildIfNeeded(this);
-    dev.assert(element);
-    toggle(element, false);
-    if (!element.parentElement) {
-      this.container_.appendChild(element);
-    }
+    this.initView(view);
     this.stack_.push(view);
     this.showView_(view);
   }
@@ -141,6 +151,9 @@ export class ViewManager {
       const index = this.elements_.indexOf(element);
       if (index != -1) {
         this.elements_.splice(index, 1);
+      }
+      if (element.parentElement == this.container_) {
+        this.container_.removeChild(element);
       }
     }
   }

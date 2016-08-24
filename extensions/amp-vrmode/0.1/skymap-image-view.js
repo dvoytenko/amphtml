@@ -33,6 +33,14 @@ export class SkyMapImageView extends ThreeView {
 
   /** @override */
   createControls(element) {
+    const bestType = this.viewManager.getBestControlsDeviceType();
+
+    // Cardboard: use device orientation.
+    if (bestType == 'cardboard') {
+      return new THREE.DeviceOrientationControls(this.camera, true);
+    }
+
+    // Most likely only "mouse" left: use basic orbit controls.
     const controls = new THREE.OrbitControls(this.camera, element);
     controls.enablePan = false;
     controls.enableZoom = false;

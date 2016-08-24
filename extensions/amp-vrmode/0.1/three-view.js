@@ -70,6 +70,9 @@ export class ThreeView extends View {
 
     /** @protected @const {?THREE.Controls} */
     this.controls = this.createControls(this.renderElement_);
+    if (this.controls && this.controls.connect) {
+      this.controls.connect();
+    }
 
     /** @protected {boolean} */
     this.controlsState = true;
@@ -79,10 +82,12 @@ export class ThreeView extends View {
     return this.renderElement_;
   }
 
+  /** @override */
   getElement() {
     return this.renderElement_;
   }
 
+  /** @override */
   start() {
     if (this.running_) {
       return;
@@ -94,12 +99,18 @@ export class ThreeView extends View {
     this.animate_();
   }
 
+  /** @override */
   stop() {
     if (!this.running_) {
       return;
     }
     this.running_ = false;
     this.clock_.stop();
+  }
+
+  /** @override */
+  resizeElement() {
+    this.resize_();
   }
 
   /** @return {number} */

@@ -46,6 +46,9 @@ amp-vrmode {
   border: 1px solid black;
   background: #fff;
   padding: 16px;
+  cursor: pointer;
+  border: 1px solid #222;
+  display: inline-block;
 }
 
 .-amp-vrmode-toggle {

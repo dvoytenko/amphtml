@@ -50,6 +50,14 @@ export class GalleryView extends ThreeView {
 
   /** @override */
   createControls(element) {
+    const bestType = this.viewManager.getBestControlsDeviceType();
+
+    // Cardboard: use device orientation.
+    if (bestType == 'cardboard') {
+      return new THREE.DeviceOrientationControls(this.camera, true);
+    }
+
+    // Most likely only "mouse" left: use basic orbit controls.
     const controls = new THREE.OrbitControls(this.camera, element);
     controls.enablePan = false;
     controls.enableZoom = false;
@@ -118,7 +126,6 @@ export class GalleryView extends ThreeView {
       const theta = (i * hl) * 0.15;
       group.position.x = radius * Math.sin(theta);
       group.position.z = - radius * Math.cos(theta);
-      console.log('pos: ', i, theta, Math.cos(theta), group.position.x, group.position.z);
       group.lookAt(this.camera.position);
 
       this.scene.add(group);
@@ -134,6 +141,52 @@ export class GalleryView extends ThreeView {
     }
 
     this.getElement().addEventListener('click', this.handleClick_.bind(this));
+
+    // XXX: show text
+    (() => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1000;
+      canvas.height = 1000;
+      canvas.style.visibility = 'hidden';
+      canvas.style.position = 'fixed';
+      canvas.style.top = 0;
+      canvas.style.left = 0;
+      canvas.style.right = 0;
+      canvas.style.bottom = 0;
+      canvas.style.zIndex = 1111111;
+      document.body.appendChild(canvas);
+
+      const context = canvas.getContext('2d');
+      context.fillStyle = 'red';
+      context.fillRect(0, 0, 300, 300);
+      context.font = '100px sans-serif';
+      context.fillStyle = 'black';
+      context.fillText("ABC", 10, 100);
+      console.log('Measured text: ', context.measureText("ABC"));
+
+      const imageUrl = canvas.toDataURL(context.getImageData(10, 100, 300, 100));
+
+      /*
+        font
+        textAlign
+        textBaseline
+        fillText
+        strokeText
+        measureText
+      */
+
+      const cubeGeometry = new THREE.PlaneGeometry(2, 2);
+      const cubeMaterial = new THREE.MeshPhongMaterial({
+        map: THREE.ImageUtils.loadTexture(imageUrl)
+      });
+      const cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
+
+      cubeMesh.position.y = - 3;
+      cubeMesh.position.z = -6;
+      cubeMesh.lookAt(this.camera.position);
+
+      this.scene.add(cubeMesh);
+    })();
 
 
     // XXX: skydome
@@ -204,17 +257,14 @@ export class GalleryView extends ThreeView {
         this.selected.setSelected(true);
         this.cursor.object3d.scale.set(1.1, 1.1, 1.1);
         navigator.vibrate(30);
-        console.log('new selected: ', this.selected);
       } else {
         this.cursor.object3d.scale.set(1, 1, 1);
-        console.log('selected reset');
       }
     }
   }
 
   /** @private */
   handleClick_() {
-    console.log('CLICK');
     if (!this.controlsState) {
       return;
     }
@@ -231,7 +281,6 @@ export class GalleryView extends ThreeView {
       z: this.camera.position.z
     };
     const newPos = obj.position;
-    console.log('zoom in: ', obj, oldPos, newPos);
     const x = tr.numeric(oldPos.x, newPos.x);
     const y = tr.numeric(oldPos.y, newPos.y);
     const z = tr.numeric(oldPos.z, newPos.z);
@@ -244,7 +293,6 @@ export class GalleryView extends ThreeView {
       this.camera.position.set(x(t), y(t), z(t));
     }, 2.0, 'ease-in-out', () => {
       this.viewManager.openPush(newView);
-      console.log('reset back to ', oldPos);
       this.camera.position.set(oldPos.x, oldPos.y, oldPos.z);
       this.setControlsState(true);
     });

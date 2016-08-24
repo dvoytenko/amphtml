@@ -23,12 +23,15 @@ import {toggle} from '../../../src/style';
  */
 export class ViewManager {
 
-  constructor(win, container, stereo) {
+  constructor(win, container, stereo, vrDevices) {
     /** @const {!Window} */
     this.win = win;
 
     /** @const {boolean} */
     this.stereo = stereo;
+
+    /** @const {!Array<!VRDisplay>} */
+    this.vrDevices = vrDevices;
 
     /** @const {!History} */
     this.history_ = historyFor(win);
@@ -41,6 +44,28 @@ export class ViewManager {
 
     /** @private @const {!Element} */
     this.elements_ = [];
+
+    this.win.addEventListener('resize', () => this.resizeAll_());
+  }
+
+  /**
+   * @return {string}
+   */
+  getBestControlsDeviceType() {
+    for (let i = 0; i < this.vrDevices.length; i++) {
+      const device = this.vrDevices[i];
+      if ((device.displayName || '').indexOf('Cardboard') != -1) {
+        return 'cardboard';
+      }
+    }
+    return 'mouse';
+  }
+
+  /** */
+  stop() {
+    for (let i = 0; i < this.stack_.length; i++) {
+      this.stack_[i].stop();
+    }
   }
 
   /**
@@ -158,6 +183,12 @@ export class ViewManager {
     }
   }
 
+  /** @private */
+  resizeAll_() {
+    for (let i = this.stack_.length - 1; i >= 0; i--) {
+      this.stack_[i].resizeElement();
+    }
+  }
 }
 
 
@@ -205,6 +236,9 @@ export class View {
 
   /** */
   start() {}
+
+  /** */
+  resizeElement() {}
 
   /** */
   stop() {}

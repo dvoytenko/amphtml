@@ -24,6 +24,11 @@ import {ThreeView} from './three-view';
 import {GalleryView} from './gallery';
 
 
+const FULL_SCREEN = false;
+const STEREO = true;
+const WEBVR_DEVICES = false;
+
+
 class AmpVrmode extends AMP.BaseElement {
 
   /** @override */
@@ -46,7 +51,8 @@ class AmpVrmode extends AMP.BaseElement {
     /** @private {boolean} */
     this.active_ = false;
 
-    const startButton = this.win.document.createElement('button');
+    const startButton = this.win.document.createElement('div');
+    startButton.setAttribute('role', 'button');
     startButton.classList.add('amp-vrmode-button');
     startButton.textContent = 'VRMODE';
     this.win.document.body.insertBefore(startButton,
@@ -73,7 +79,8 @@ class AmpVrmode extends AMP.BaseElement {
     this.threePromise_ =
         addScript('/node_modules/three/build/three.js').then(() => {
           return Promise.all([
-            //XXX addScript('https://toji.github.io/webvr-samples/js/third-party/webvr-polyfill.js'),
+            // addScript('https://toji.github.io/webvr-samples/js/third-party/webvr-polyfill.js'),
+            addScript('/third_party/webvr-polyfill//webvr-polyfill.js'),
             addScript('/node_modules/three/examples/js/effects/StereoEffect.js'),
             addScript('/node_modules/three/examples/js/effects/VREffect.js'),
             addScript('/node_modules/three/examples/js/controls/DeviceOrientationControls.js'),
@@ -114,8 +121,22 @@ class AmpVrmode extends AMP.BaseElement {
 
     this.active_ = true;
 
+    if (FULL_SCREEN) {
+      if (this.element.webkitRequestFullScreen) {
+        this.element.webkitRequestFullScreen();
+      } else if (this.element.requestFullscreen) {
+        this.element.requestFullscreen();
+      }
+    }
+
     this.threePromise_.then(() => {
-      this.construct_();
+      if (WEBVR_DEVICES && navigator.getVRDisplays) {
+        navigator.getVRDisplays().then(devices => {
+          this.construct_(devices);
+        })
+      } else {
+        this.construct_([]);
+      }
     });
   }
 
@@ -134,6 +155,9 @@ class AmpVrmode extends AMP.BaseElement {
     if (!this.active_) {
       return;
     }
+    if (this.viewManager_) {
+      this.viewManager_.stop();
+    }
     this.getViewport().leaveLightboxMode();
     this.element.style.display = 'none';
     if (this.historyId_ != -1) {
@@ -150,12 +174,15 @@ class AmpVrmode extends AMP.BaseElement {
   }
 
   /**
+   * @param {!Array<!VRDisplay>} vrDevices
    * @private
    */
-  construct_() {
+  construct_(vrDevices) {
+    console.log('VR Devices: ', vrDevices);
+
     /** @private @const {!ViewManager} */
     this.viewManager_ = new ViewManager(this.win, this.container_,
-        /* stereo */ true);
+        STEREO, vrDevices);
     this.viewManager_.openPush(new GalleryView());
   }
 }

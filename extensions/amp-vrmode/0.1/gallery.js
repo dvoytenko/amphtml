@@ -186,7 +186,7 @@ export class GalleryView extends ThreeView {
       cubeMesh.lookAt(this.camera.position);
 
       this.scene.add(cubeMesh);
-    })();
+    });
 
 
     // XXX: skydome

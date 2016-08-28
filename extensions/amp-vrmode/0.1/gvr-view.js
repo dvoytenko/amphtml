@@ -55,7 +55,7 @@ export class GvrView extends View {
     src = addParamToUrl(src, 'image', imageSrc);
     src = addParamToUrl(src, 'is_stereo', 'true');
     // XXX: start in VR mode right away
-    // src = addParamToUrl(src, 'is_stereo', 'true');
+    // src = addParamToUrl(src, '???', '???');
     iframe.setAttribute('src', src);
 
     /** @const {!Element} */

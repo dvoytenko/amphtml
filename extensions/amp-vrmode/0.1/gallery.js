@@ -15,9 +15,11 @@
  */
 
 import {BasicImageView} from './basic-image-view';
+import {BasicTextView} from './basic-text-view';
 import {BasicVideoView} from './basic-video-view';
 import {GvrView} from './gvr-view';
 import {SkyMapImageView} from './skymap-image-view';
+import {TextImage} from './text-image';
 import {ThreeView} from './three-view';
 import {View} from './view';
 import {toArray} from '../../../src/types';
@@ -68,6 +70,9 @@ export class GalleryView extends ThreeView {
 
   /** @override */
   constructScene() {
+    /** @private @const {!TextImage} */
+    this.textImage_ = new TextImage();
+
     // Fog
     this.scene.fog = new THREE.Fog(0xffffff, 2000, 10000);
 
@@ -90,7 +95,7 @@ export class GalleryView extends ThreeView {
     this.scene.add(sphere);
 
     this.candidates_ = toArray(document.querySelectorAll(
-        'amp-img,amp-video,amp-google-vrview-image'));// XXX: ,amp-twitter,amp-youtube,blockquote
+        'amp-img,amp-video,amp-google-vrview-image,blockquote'));// XXX: amp-twitter,amp-youtube
     console.log('candidates: ', this.candidates_.length, this.candidates_);
     this.vrInfo_ = [];
     for (let i = 0; i < this.candidates_.length; i++) {
@@ -141,53 +146,6 @@ export class GalleryView extends ThreeView {
     }
 
     this.getElement().addEventListener('click', this.handleClick_.bind(this));
-
-    // XXX: show text
-    (() => {
-      const canvas = document.createElement('canvas');
-      canvas.width = 1000;
-      canvas.height = 1000;
-      canvas.style.visibility = 'hidden';
-      canvas.style.position = 'fixed';
-      canvas.style.top = 0;
-      canvas.style.left = 0;
-      canvas.style.right = 0;
-      canvas.style.bottom = 0;
-      canvas.style.zIndex = 1111111;
-      document.body.appendChild(canvas);
-
-      const context = canvas.getContext('2d');
-      context.fillStyle = 'red';
-      context.fillRect(0, 0, 300, 300);
-      context.font = '100px sans-serif';
-      context.fillStyle = 'black';
-      context.fillText("ABC", 10, 100);
-      console.log('Measured text: ', context.measureText("ABC"));
-
-      const imageUrl = canvas.toDataURL(context.getImageData(10, 100, 300, 100));
-
-      /*
-        font
-        textAlign
-        textBaseline
-        fillText
-        strokeText
-        measureText
-      */
-
-      const cubeGeometry = new THREE.PlaneGeometry(2, 2);
-      const cubeMaterial = new THREE.MeshPhongMaterial({
-        map: THREE.ImageUtils.loadTexture(imageUrl)
-      });
-      const cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial);
-
-      cubeMesh.position.y = - 3;
-      cubeMesh.position.z = -6;
-      cubeMesh.lookAt(this.camera.position);
-
-      this.scene.add(cubeMesh);
-    });
-
 
     // XXX: skydome
     (() => {
@@ -354,12 +312,13 @@ export class GalleryView extends ThreeView {
 
     if (element.tagName == 'BLOCKQUOTE') {
       const text = element.textContent;
-      const snippet = text.length > 50 ? text.substring(0, 50) + '...' : text;
+      const snippet = text.length > 10 ? text.substring(0, 10) + '...' : text;
+      const thumbText = `\u00AB${snippet}\u00BB`;
       return {
         type: 'BLOCKQUOTE',
         playable: false,
-        thumbImage: null,
-        thumbText: `\u00AB${snippet}\u00BB`,
+        thumbImage: this.textImage_.getImageUrl(thumbText),
+        thumbText: thumbText,
         source: text,
       };
     }
@@ -390,6 +349,9 @@ export class GalleryView extends ThreeView {
     }
     if (vrInfo.type == 'GVR') {
       return new GvrView(vrInfo);
+    }
+    if (vrInfo.type == 'BLOCKQUOTE') {
+      return new BasicTextView(vrInfo);
     }
     return new UnknownView();
   }

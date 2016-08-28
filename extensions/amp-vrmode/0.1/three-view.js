@@ -108,6 +108,20 @@ export class ThreeView extends View {
     this.clock_.stop();
   }
 
+  /**
+   */
+  render() {
+    this.resize_();
+    this.vsync_.mutate(() => {
+      this.camera.updateProjectionMatrix();
+      if (this.controls && this.controlsState) {
+        this.controls.update(0);
+      }
+      this.update(0);
+      this.effect_.render(this.scene, this.camera);
+    });
+  }
+
   /** @override */
   resizeElement() {
     this.resize_();

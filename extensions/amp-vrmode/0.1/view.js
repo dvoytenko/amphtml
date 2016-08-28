@@ -153,6 +153,11 @@ export class ViewManager {
         found = true;
       }
     }
+    for (let i = 0; i < this.stack_.length; i++) {
+      if (this.stack_[i] != view) {
+        this.stack_[i].stop();
+      }
+    }
     if (!found) {
       this.elements_.push(element);
     }

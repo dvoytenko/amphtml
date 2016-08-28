@@ -18,6 +18,7 @@ import {BasicImageView} from './basic-image-view';
 import {BasicTextView} from './basic-text-view';
 import {BasicVideoView} from './basic-video-view';
 import {GvrView} from './gvr-view';
+import {SkyDome} from './skydome';
 import {SkyMapImageView} from './skymap-image-view';
 import {TextImage} from './text-image';
 import {ThreeView} from './three-view';
@@ -145,46 +146,10 @@ export class GalleryView extends ThreeView {
       cubeMesh.vrInfo = vrInfo;
     }
 
+    const skydome = new SkyDome('/examples/img/logo-guardian.png');
+    this.scene.add(skydome.create());
+
     this.getElement().addEventListener('click', this.handleClick_.bind(this));
-
-    // XXX: skydome
-    (() => {
-      console.log('load sky');
-      var geometry = new THREE.SphereGeometry(50, 32, 32);
-      var uniforms = {
-        texture: {
-          type: 't',
-          value: THREE.ImageUtils.loadTexture(
-              'https://lh4.googleusercontent.com/-okOlNNHeoOc/VbYyrlFYFII/AAAAAAABYdA/La-3j3c-QQI/w1002-h557-no/PANO_20150726_171347%257E2.jpg')
-        }
-      };
-
-      var material = new THREE.ShaderMaterial( {
-        uniforms:       uniforms,
-        vertexShader:   `
-            varying vec2 vUV;
-            void main() {
-              vUV = uv;
-              vec4 pos = vec4(position, 1.0);
-              gl_Position = projectionMatrix * modelViewMatrix * pos;
-            }
-            `,
-        fragmentShader: `
-            uniform sampler2D texture;
-            varying vec2 vUV;
-            void main() {
-              vec4 sample = texture2D(texture, vUV);
-              gl_FragColor = vec4(sample.xyz, sample.w);
-            }
-            `,
-      });
-
-      var skyBox = new THREE.Mesh(geometry, material);
-      skyBox.scale.set(-1, 1, 1);
-      skyBox.eulerOrder = 'XZY';
-      skyBox.renderDepth = 50.0;
-      this.scene.add(skyBox);
-    });
   }
 
   findIntersections() {
@@ -249,7 +214,7 @@ export class GalleryView extends ThreeView {
     this.startAnimation(time => {
       const t = time;
       this.camera.position.set(x(t), y(t), z(t));
-    }, 2.0, 'ease-in-out', () => {
+    }, 1.0, 'ease-in-out', () => {
       this.viewManager.openPush(newView);
       this.camera.position.set(oldPos.x, oldPos.y, oldPos.z);
       this.setControlsState(true);

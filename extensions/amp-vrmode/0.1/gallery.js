@@ -105,7 +105,7 @@ export class GalleryView extends ThreeView {
       vrInfo.aspect = candidate.offsetHeight == 0 ? 0 :
           candidate.offsetWidth / candidate.offsetHeight;
       if (!vrInfo.thumbImage) {
-        vrInfo.thumbImage = '/examples/img/unknown.jpg';
+        vrInfo.thumbImage = this.textImage_.getImageUrl('???');
       }
       this.vrInfo_.push(vrInfo);
     }
@@ -226,9 +226,6 @@ export class GalleryView extends ThreeView {
     console.log('SHOW POKES!!!');
 
     const loader = new THREE.ObjectLoader();
-    // /models/dragonite/dragonite-pokemon-go.json
-    // /models/pokeball/pokeball-vray.json
-    // /models/squirtle/squirtle-pokemon-go.json
     console.log('try to load');
     loader.load('/examples/model3d/dragonite/dragonite-pokemon-go.json', obj => {
       console.log('loaded: ', obj);
@@ -257,6 +254,43 @@ export class GalleryView extends ThreeView {
         obj.scale.x = obj.scale.y = obj.scale.z = scaler(t2);
         if (time == 1) {
           this.scene.remove(obj);
+          setTimeout(() => {
+            this.showPokesBall_();
+          }, 100);
+        }
+      }, 2.0, 'ease-in-out');
+    });
+  }
+
+  /** @private */
+  showPokesBall_() {
+    console.log('SHOW POKES BALL!!!');
+
+    const loader = new THREE.ObjectLoader();
+    console.log('try to load');
+    loader.load('/examples/model3d/pokeball/pokeball-vray.json', obj => {
+      console.log('loaded: ', obj);
+
+      obj.position.x = 0;
+      obj.position.y = 3;
+      obj.position.z = -8;
+
+      obj.scale.x = obj.scale.y = obj.scale.z = 0.02;
+      obj.rotation.x = Math.PI / 6;
+      obj.rotation.y = Math.PI;
+      this.scene.add(obj);
+
+      const moveX = tr.numeric(-3, 5);
+      const moveY = function(time) {
+        return Math.cos(time * Math.PI * 2 * 2.5) * 3;
+      };
+      const moveZ = tr.numeric(2, -30);
+      this.startAnimation(time => {
+        obj.position.x = moveX(time);
+        obj.position.y = moveY(time);
+        obj.position.z = moveZ(time);
+        if (time > 0.95) {
+          this.scene.remove(obj);
         }
       }, 2.0, 'ease-in-out');
     });
@@ -276,7 +310,7 @@ export class GalleryView extends ThreeView {
     }
 
     if (element.tagName == 'BLOCKQUOTE') {
-      const text = element.textContent;
+      const text = element.textContent.trim();
       const snippet = text.length > 10 ? text.substring(0, 10) + '...' : text;
       const thumbText = `\u00AB${snippet}\u00BB`;
       return {

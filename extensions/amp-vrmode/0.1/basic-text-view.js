@@ -68,7 +68,7 @@ export class BasicTextView extends ThreeView {
   /** @override */
   resize(width, height) {
     // const dist = Math.min(width, height * this.vrInfo.aspect);
-    this.mesh_.position.z = -1;
+    this.mesh_.position.z = -1.5;
   }
 
   /** @private */

@@ -24,9 +24,9 @@ import {ThreeView} from './three-view';
 import {GalleryView} from './gallery';
 
 
-const FULL_SCREEN = false;
+const FULL_SCREEN = true;
 const STEREO = true;
-const WEBVR_DEVICES = false;
+const WEBVR_DEVICES = true;
 
 
 class AmpVrmode extends AMP.BaseElement {
@@ -80,7 +80,7 @@ class AmpVrmode extends AMP.BaseElement {
         addScript('/node_modules/three/build/three.js').then(() => {
           return Promise.all([
             // addScript('https://toji.github.io/webvr-samples/js/third-party/webvr-polyfill.js'),
-            addScript('/third_party/webvr-polyfill//webvr-polyfill.js'),
+            addScript('/third_party/webvr-polyfill/webvr-polyfill.js'),
             addScript('/node_modules/three/examples/js/effects/StereoEffect.js'),
             addScript('/node_modules/three/examples/js/effects/VREffect.js'),
             addScript('/node_modules/three/examples/js/controls/DeviceOrientationControls.js'),

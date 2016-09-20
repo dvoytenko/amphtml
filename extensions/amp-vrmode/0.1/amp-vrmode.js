@@ -24,9 +24,9 @@ import {ThreeView} from './three-view';
 import {GalleryView} from './gallery';
 
 
-const FULL_SCREEN = false;
+const FULL_SCREEN = true;
 const STEREO = true;
-const WEBVR_DEVICES = false;
+const WEBVR_DEVICES = true;
 
 
 class AmpVrmode extends AMP.BaseElement {

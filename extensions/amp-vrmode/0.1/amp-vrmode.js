@@ -77,16 +77,16 @@ class AmpVrmode extends AMP.BaseElement {
     // TODO(dvoytenko): WAT!? Remove this craziness!!!
     /** @private @const {!Promise} */
     this.threePromise_ =
-        addScript('/node_modules/three/build/three.js').then(() => {
+        addScript('/third_party/threejs/build/three.js').then(() => {
           return Promise.all([
             // addScript('https://toji.github.io/webvr-samples/js/third-party/webvr-polyfill.js'),
             addScript('/third_party/webvr-polyfill/webvr-polyfill.js'),
-            addScript('/node_modules/three/examples/js/effects/StereoEffect.js'),
-            addScript('/node_modules/three/examples/js/effects/VREffect.js'),
-            addScript('/node_modules/three/examples/js/controls/DeviceOrientationControls.js'),
-            addScript('/node_modules/three/examples/js/controls/OrbitControls.js'),
-            addScript('/node_modules/three/examples/js/controls/TrackballControls.js'),
-            addScript('/node_modules/three/examples/js/renderers/Projector.js'),
+            addScript('/third_party/threejs/examples/js/effects/StereoEffect.js'),
+            addScript('/third_party/threejs/examples/js/effects/VREffect.js'),
+            addScript('/third_party/threejs/examples/js/controls/DeviceOrientationControls.js'),
+            addScript('/third_party/threejs/examples/js/controls/OrbitControls.js'),
+            addScript('/third_party/threejs/examples/js/controls/TrackballControls.js'),
+            addScript('/third_party/threejs/examples/js/renderers/Projector.js'),
           ]);
         }).then(() => {
           console.log('THREE loaded.');

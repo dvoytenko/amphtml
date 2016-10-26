@@ -17,16 +17,12 @@
 import {CSS} from '../../../build/amp-vrmode-0.1.css';
 import {Layout} from '../../../src/layout';
 import {historyFor} from '../../../src/history';
+import {viewerFor} from '../../../src/viewer';
 import * as st from '../../../src/style';
 
 import {ViewManager} from './view';
 import {ThreeView} from './three-view';
 import {GalleryView} from './gallery';
-
-
-const FULL_SCREEN = true;
-const STEREO = true;
-const WEBVR_DEVICES = true;
 
 
 class AmpVrmode extends AMP.BaseElement {
@@ -121,7 +117,12 @@ class AmpVrmode extends AMP.BaseElement {
 
     this.active_ = true;
 
-    if (FULL_SCREEN) {
+    const viewer = viewerFor(this.win);
+    const fullScreen = viewer.getParam('fullscreen') != '0';
+    const webvrDevices = viewer.getParam('vrdevices') != '0';
+    const stereo = viewer.getParam('stereo') != '0';
+
+    if (fullScreen) {
       if (this.element.webkitRequestFullScreen) {
         this.element.webkitRequestFullScreen();
       } else if (this.element.requestFullscreen) {
@@ -130,12 +131,12 @@ class AmpVrmode extends AMP.BaseElement {
     }
 
     this.threePromise_.then(() => {
-      if (WEBVR_DEVICES && navigator.getVRDisplays) {
+      if (webvrDevices && navigator.getVRDisplays) {
         navigator.getVRDisplays().then(devices => {
-          this.construct_(devices);
+          this.construct_(devices, stereo);
         })
       } else {
-        this.construct_([]);
+        this.construct_([], stereo);
       }
     });
   }
@@ -175,14 +176,15 @@ class AmpVrmode extends AMP.BaseElement {
 
   /**
    * @param {!Array<!VRDisplay>} vrDevices
+   * @param {boolean} stereo
    * @private
    */
-  construct_(vrDevices) {
+  construct_(vrDevices, stereo) {
     console.log('VR Devices: ', vrDevices);
 
     /** @private @const {!ViewManager} */
     this.viewManager_ = new ViewManager(this.win, this.container_,
-        STEREO, vrDevices);
+        stereo, vrDevices);
     this.viewManager_.openPush(new GalleryView());
   }
 }

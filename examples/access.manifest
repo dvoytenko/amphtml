@@ -1,0 +1,12 @@
+{
+  "services": [
+    {
+      "vendor": "subscriptions.google.com",
+      "product": "12345-de76"
+    },
+    {
+      "vendor": "other.big.com",
+      "product": "def-45678-12"
+    }
+  ]
+}

@@ -19,6 +19,7 @@ import {Guide} from './guide';
 import {Services} from '../../../src/services';
 import {createLoaderElement} from '../../../src/loader';
 import {installStyles} from '../../../src/style-installer';
+import {toArray} from '../../../src/types';
 
 const TAG = 'amp-paywall';
 
@@ -63,6 +64,22 @@ export class PaywallService {
         access: true,
         subscriber: false,
         meter: {
+          quotaLeft: 10,
+          text: 'You can read 10 articles for free this month!',
+        },
+        offer: {
+          id: 'offer-123',
+          product: '1234-def',
+          text: '7 day free trial',
+        },
+      }, GUIDES.NEW_USER);
+    });
+    this.guide_.onAction('authorize-metered', action => {
+      this.showPopup_(this.config_, {
+        vendor: 'Google Subscriptions',
+        access: true,
+        subscriber: false,
+        meter: {
           quotaLeft: 3,
           text: '3 articles left this month',
         },
@@ -71,7 +88,23 @@ export class PaywallService {
           product: '1234-def',
           text: '7 day free trial',
         },
-      }, GUIDES.NEW_USER);
+      }, GUIDES.RET_USER_METERED);
+    });
+    this.guide_.onAction('not-authorized-no-meter', action => {
+      this.showExpandedPopup_(this.config_, {
+        vendor: 'Google Subscriptions',
+        access: false,
+        subscriber: false,
+        meter: {
+          quotaLeft: 0,
+          text: 'No articles left this month',
+        },
+        offer: {
+          id: 'offer-123',
+          product: '1234-def',
+          text: 'Subscribe now and get 7 day free trial!',
+        },
+      }, GUIDES.RET_USER_NO_METER);
     });
   }
 
@@ -264,6 +297,17 @@ export class PaywallService {
     this.popup_.start();
     this.guide_.show(guide).then(() => {});
   }
+
+  /**
+   * @param {!JSONObject} config
+   * @param {!JSONObject} authorization
+   * @private
+   */
+  showExpandedPopup_(config, authorization, guide) {
+    this.popup_ = new Popup(config, authorization);
+    this.popup_.startExpanded();
+    this.guide_.show(guide).then(() => {});
+  }
 }
 
 
@@ -289,7 +333,7 @@ class Popup {
     popup.appendChild(closeButton);
     closeButton.addEventListener('click', e => {
       e.stopPropagation();
-      document.body.removeChild(popup);
+      this.close();
     });
 
     const brandText = document.createElement('div');
@@ -311,6 +355,7 @@ class Popup {
     popup.appendChild(offerText);
 
     const expandedContainer = document.createElement('div');
+    expandedContainer.classList.add('amp-paywall-popup-expanded-container');
     popup.appendChild(expandedContainer);
     this.expandedContainer_ = expandedContainer;
 
@@ -332,6 +377,27 @@ class Popup {
     popup.addEventListener('click', () => {
       this.expand_();
     });
+  }
+
+  /**
+   */
+  startExpanded() {
+    this.start();
+    this.expand_();
+    this.popup_.classList.add('not-closable');
+
+    this.graypane_ = document.createElement('div');
+    this.graypane_.classList.add('amp-paywall-popup-graypane');
+    document.body.appendChild(this.graypane_);
+  }
+
+  /**
+   */
+  close() {
+    document.body.removeChild(this.popup_);
+    if (this.graypane_) {
+      document.body.removeChild(this.graypane_);
+    }
   }
 
   /**
@@ -364,7 +430,15 @@ class Popup {
    */
   alreadySubscriber_() {
     console.log('QQQ: already subscriber!');
-    // QQQQ
+    const toRemove = toArray(this.popup_.querySelectorAll(
+        '.amp-paywall-popup-state-text' +
+        ',.amp-paywall-popup-offer-text' +
+        ',.amp-paywall-popup-expanded-container' +
+        ',.amp-paywall-popup-already-subscriber-button'));
+    toRemove.forEach(element => {
+      element.parentElement.removeChild(element);
+    });
+    // QQQQ: render sign in options:
   }
 }
 
@@ -438,15 +512,15 @@ GUIDES.START_FLOW = {
         },
         {
           optionText: 'Returning user: still has metering quota',
-          action: {verb: 'guide', scene: 'QQQQ'},
+          action: {verb: 'authorize-metered'},
         },
         {
           optionText: 'Returning user: no more metering quota',
-          action: {verb: 'guide', scene: 'QQQQ'},
+          action: {verb: 'not-authorized-no-meter'},
         },
         {
           optionText: 'Subscriber: payment problems',
-          action: {verb: 'guide', scene: 'QQQQ'},
+          action: {verb: 'QQQQ'},
         },
       ],
     },
@@ -507,7 +581,6 @@ GUIDES.NEW_USER = {
   ],
 };
 
-
 GUIDES.NEW_USER_POPUP_CLOSABLE = {
   title: 'First-time user: popup is non-blocking and closable',
   sections: [
@@ -529,7 +602,6 @@ GUIDES.NEW_USER_POPUP_CLOSABLE = {
   ],
 };
 
-
 GUIDES.NEW_USER_BRANDING = {
   title: 'First-time user: publisher branding',
   sections: [
@@ -547,7 +619,6 @@ GUIDES.NEW_USER_BRANDING = {
     },
   ],
 };
-
 
 GUIDES.NEW_USER_METER = {
   title: 'First-time user: metering',
@@ -567,7 +638,6 @@ GUIDES.NEW_USER_METER = {
   ],
 };
 
-
 GUIDES.NEW_USER_OFFER = {
   title: 'First-time user: offer',
   sections: [
@@ -586,7 +656,6 @@ GUIDES.NEW_USER_OFFER = {
   ],
 };
 
-
 GUIDES.NEW_USER_FINAL = {
   title: 'First-time user: that\'s it',
   sections: [
@@ -596,6 +665,122 @@ GUIDES.NEW_USER_FINAL = {
     {
       class: 'TODO',
       text: 'TODO: what about "already subscriber"?',
+    },
+    {
+      buttonBar: [
+        {
+          buttonText: 'Done',
+          action: {verb: 'close'},
+        },
+      ],
+    },
+  ],
+};
+
+
+GUIDES.RET_USER_METERED = {
+  title: 'Returning user: metering',
+  sections: [
+    {
+      text: 'Mostly the same as first-time user. Access granted. Offer is shown.',
+    },
+    {
+      text: 'But, metering quota is reduced.',
+      pointTo: '.amp-paywall-popup-state-text',
+    },
+    {
+      buttonBar: [
+        {
+          buttonText: 'Done',
+          action: {verb: 'close'},
+        },
+      ],
+    },
+  ],
+};
+
+GUIDES.RET_USER_NO_METER = {
+  title: 'Returning user: no quota',
+  sections: [
+    {
+      text: 'No more metering quota. Authorization is denied.',
+    },
+    {
+      text: 'Google Subscription has a product offer. Publisher opts in to use it.',
+    },
+    {
+      buttonBar: [
+        {
+          buttonText: 'Some details...',
+          action: {verb: 'guide', scene: 'RET_USER_NO_METER_BLOCKING'},
+        },
+      ],
+    },
+  ],
+};
+
+GUIDES.RET_USER_NO_METER_BLOCKING = {
+  title: 'No quota: popup is blocking and not closable',
+  sections: [
+    {
+      text: 'Popup is immediately shown in an expanded form.',
+    },
+    {
+      text: 'This UI is blocked. The user has to respond to the popup. There\'s no close button.',
+      pointTo: '.amp-paywall-popup',
+    },
+    {
+      buttonBar: [
+        {
+          buttonText: 'Next',
+          action: {verb: 'guide', scene: 'RET_USER_NO_METER_OFFER'},
+        },
+      ],
+    },
+  ],
+};
+
+GUIDES.RET_USER_NO_METER_OFFER = {
+  title: 'No quota: offer details',
+  sections: [
+    {
+      text: 'The detailed offer details are shown. It might take a bit to load.',
+      pointTo: '.amp-paywall-popup-expanded-container',
+    },
+    {
+      buttonBar: [
+        {
+          buttonText: 'Next',
+          action: {verb: 'guide', scene: 'RET_USER_NO_METER_ALREADY_SUBSCR'},
+        },
+      ],
+    },
+  ],
+};
+
+GUIDES.RET_USER_NO_METER_ALREADY_SUBSCR = {
+  title: 'No quota: already a subscriber?',
+  sections: [
+    {
+      text: 'Maybe the user is already a subscriber?',
+      pointTo: '.amp-paywall-popup-already-subscriber-button',
+    },
+    {
+      buttonBar: [
+        {
+          buttonText: 'Next',
+          action: {verb: 'guide', scene: 'RET_USER_NO_METER_FINAL'},
+        },
+      ],
+    },
+  ],
+};
+
+GUIDES.RET_USER_NO_METER_FINAL = {
+  title: 'No quota: final',
+  sections: [
+    {
+      text: 'Next, the user can take the offer or select "already a subscriber".',
     },
     {
       buttonBar: [

@@ -66,6 +66,7 @@
 .amp-paywall-popup {
   font-family: Roboto, Helvetica, Arial, sans-serif;
   position: fixed;
+  z-index: 2;
   bottom: 0;
   left: 0;
   right: 0;
@@ -87,6 +88,17 @@
   height: 140px;
 }
 
+.amp-paywall-popup-graypane {
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: black;
+  opacity: 0.3;
+}
+
 .amp-paywall-popup-close-button {
   position: absolute;
   width: 28px;
@@ -101,6 +113,10 @@
   box-shadow: 0 0 5px 0 rgba(0,0,0, 0.2);
   border: none;
   border-top-left-radius: 12px;
+}
+
+.amp-paywall-popup.not-closable .amp-paywall-popup-close-button {
+  display: none;
 }
 
 .amp-paywall-popup-brand-text {
@@ -134,6 +150,9 @@
 
 .amp-paywall-popup:not(.amp-paywall-popup-loading) .i-amphtml-loader {
   display: none;
+}
+
+.amp-paywall-popup-expanded-container {
 }
 
 

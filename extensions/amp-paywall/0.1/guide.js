@@ -215,8 +215,9 @@ export class Guide {
       top: this.pane_.offsetHeight / 2,
     };
     const fromPos = sectionEl.getBoundingClientRect();
-    const toPos = this.win.document.querySelector(section.pointTo)
+    const b = this.win.document.querySelector(section.pointTo)
         .getBoundingClientRect();
+    const toPos = {left: b.left + 10, top: b.top};
     const angle = Math.atan2(
         (toPos.top - midPos.top),
         (toPos.left - midPos.left)) *

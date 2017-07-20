@@ -139,6 +139,16 @@ export class Guide {
   renderScene_(scene) {
     const sceneEl = this.win.document.createElement('div');
     sceneEl.classList.add('amp-guide-scene');
+
+    const closeButton = document.createElement('button');
+    closeButton.classList.add('amp-guide-close-button');
+    closeButton.textContent = 'x';
+    sceneEl.appendChild(closeButton);
+    closeButton.addEventListener('click', e => {
+      e.stopPropagation();
+      this.triggerAction_({verb: 'close'});
+    });
+
     if (scene.title) {
       const titleEl = this.win.document.createElement('header');
       titleEl.textContent = scene.title;

@@ -59,7 +59,7 @@ export class PaywallService {
       });
     });
     this.guide_.onAction('authorize-new-user', action => {
-      this.showPopup_(this.config_, {
+      this.showPopup_(PopupShortOffer, true, this.config_, {
         vendor: 'Google Subscriptions',
         access: true,
         subscriber: false,
@@ -75,7 +75,7 @@ export class PaywallService {
       }, GUIDES.NEW_USER);
     });
     this.guide_.onAction('authorize-metered', action => {
-      this.showPopup_(this.config_, {
+      this.showPopup_(PopupShortOffer, true, this.config_, {
         vendor: 'Google Subscriptions',
         access: true,
         subscriber: false,
@@ -91,7 +91,7 @@ export class PaywallService {
       }, GUIDES.RET_USER_METERED);
     });
     this.guide_.onAction('not-authorized-no-meter', action => {
-      this.showExpandedPopup_(this.config_, {
+      this.showPopup_(PopupExpandedOffer, false, this.config_, {
         vendor: 'Google Subscriptions',
         access: false,
         subscriber: false,
@@ -292,38 +292,45 @@ export class PaywallService {
    * @param {!JSONObject} authorization
    * @private
    */
-  showPopup_(config, authorization, guide) {
-    this.popup_ = new Popup(config, authorization);
-    this.popup_.start();
-    this.guide_.show(guide).then(() => {});
-  }
-
-  /**
-   * @param {!JSONObject} config
-   * @param {!JSONObject} authorization
-   * @private
-   */
-  showExpandedPopup_(config, authorization, guide) {
-    this.popup_ = new Popup(config, authorization);
-    this.popup_.startExpanded();
-    this.guide_.show(guide).then(() => {});
+  showPopup_(popupClass, closable, config, authorization, guide) {
+    this.popup_ = new popupClass(config, authorization);
+    const result = this.popup_.start(closable);
+    if (guide) {
+      this.guide_.show(guide).then(() => {});
+    }
+    result.then(res => {
+      console.log('QQQ: popup result: ', res);
+      if (res == 'show-expanded-offer') {
+        this.showPopup_(
+            PopupExpandedOffer,
+            closable,
+            config,
+            authorization,
+            null);//QQQQ: guide?
+      } else if (res == 'show-signin-options') {
+        this.showPopup_(
+            PopupSignIn,
+            closable,
+            config,
+            authorization,
+            null);//QQQQ: guide?
+      }
+    });
   }
 }
 
 
 class Popup {
-  /**
-   * @param {!JSONObject} config
-   * @param {!JSONObject} authorization
-   */
-  constructor(config, authorization) {
-    this.config_ = config;
-    this.authorization_ = authorization;
+  constructor() {
+    this.popup_ = null;
+    this.graypane_ = null;
+    this.resolver_ = null;
   }
 
   /**
+   * @return {!Promise}
    */
-  start() {
+  start(closable) {
     const popup = document.createElement('div');
     this.popup_ = popup;
     popup.classList.add('amp-paywall-popup');
@@ -336,6 +343,60 @@ class Popup {
       this.close();
     });
 
+    if (!closable) {
+      popup.classList.add('not-closable');
+      this.graypane_ = document.createElement('div');
+      this.graypane_.classList.add('amp-paywall-popup-graypane');
+      document.body.appendChild(this.graypane_);
+    }
+
+    this.render(popup);
+    document.body.appendChild(popup);
+    this.onStarted(popup);
+    return new Promise(resolve => {
+      this.resolver_ = resolve;
+    });
+  }
+
+  /**
+   */
+  close(opt_result) {
+    document.body.removeChild(this.popup_);
+    if (this.graypane_) {
+      document.body.removeChild(this.graypane_);
+    }
+    if (this.resolver_) {
+      this.resolver_(opt_result);
+    }
+  }
+
+  /**
+   * @param {!Element} popup
+   * @abstract
+   */
+  render(popup) {}
+
+  /**
+   * @param {!Element} popup
+   */
+  onStarted(popup) {}
+}
+
+
+class PopupShortOffer extends Popup {
+  /**
+   * @param {!JSONObject} config
+   * @param {!JSONObject} authorization
+   */
+  constructor(config, authorization) {
+    super();
+    this.config_ = config;
+    this.authorization_ = authorization;
+  }
+
+  /**
+   */
+  render(popup) {
     const brandText = document.createElement('div');
     brandText.classList.add('amp-paywall-popup-brand-text');
     brandText.textContent = 'Vampires die in the light';
@@ -354,6 +415,33 @@ class Popup {
         this.authorization_.vendor;
     popup.appendChild(offerText);
 
+    popup.addEventListener('click', () => {
+      this.close('show-expanded-offer');
+    });
+  }
+}
+
+
+class PopupExpandedOffer extends Popup {
+  /**
+   * @param {!JSONObject} config
+   * @param {!JSONObject} authorization
+   */
+  constructor(config, authorization) {
+    super();
+    this.config_ = config;
+    this.authorization_ = authorization;
+  }
+
+  /** @override */
+  render(popup) {
+    popup.style.minHeight = '200px';
+
+    const brandText = document.createElement('div');
+    brandText.classList.add('amp-paywall-popup-brand-text');
+    brandText.textContent = 'Vampires die in the light';
+    popup.appendChild(brandText);
+
     const expandedContainer = document.createElement('div');
     expandedContainer.classList.add('amp-paywall-popup-expanded-container');
     popup.appendChild(expandedContainer);
@@ -365,81 +453,106 @@ class Popup {
     popup.appendChild(alreadySubscriberButton);
     alreadySubscriberButton.addEventListener('click', e => {
       e.stopPropagation();
-      this.alreadySubscriber_();
+      this.close('show-signin-options');
     });
 
     const loader = createLoaderElement(document, 'amp-paywall');
     popup.appendChild(loader);
     this.loader_ = loader;
-
-    document.body.appendChild(popup);
-
-    popup.addEventListener('click', () => {
-      this.expand_();
-    });
   }
 
-  /**
-   */
-  startExpanded() {
-    this.start();
-    this.expand_();
-    this.popup_.classList.add('not-closable');
-
-    this.graypane_ = document.createElement('div');
-    this.graypane_.classList.add('amp-paywall-popup-graypane');
-    document.body.appendChild(this.graypane_);
-  }
-
-  /**
-   */
-  close() {
-    document.body.removeChild(this.popup_);
-    if (this.graypane_) {
-      document.body.removeChild(this.graypane_);
-    }
-  }
-
-  /**
-   */
-  expand_() {
-    if (this.expanded_) {
-      return;
-    }
-    this.expanded_ = true;
-    console.log('QQQ: expand popup');
-    this.popup_.classList.add('amp-paywall-popup-expanded');
-    this.popup_.classList.add('amp-paywall-popup-loading');
+  /** @override */
+  onStarted(popup) {
+    popup.classList.add('amp-paywall-popup-loading');
     this.loader_.classList.add('amp-active');
     setTimeout(() => {
       console.log('QQQ: popup content loaded');
-      this.popup_.classList.remove('amp-paywall-popup-loading');
+      popup.classList.remove('amp-paywall-popup-loading');
       this.loader_.classList.remove('amp-active');
       this.expandLoaded_();
     }, 3000);
   }
 
-  /**
-   */
+  /** @private */
   expandLoaded_() {
-    //QQQ
-    this.expandedContainer_.textContent = 'Complete checkout here + upsell via IFRAME or straight to the dialog!';
+    this.expandedContainer_.appendChild(todoText('Brand with "Google Subscriptions"'));
+    this.expandedContainer_.appendChild(this.renderOfferButton_({
+      text: '14 day free, $8/mo after',
+    }));
+    this.expandedContainer_.appendChild(this.renderOfferButton_({
+      text: '$80/year',
+    }));
+  }
+
+  /** @private */
+  renderOfferButton_(spec) {
+    const button = document.createElement('button');
+    button.classList.add('amp-paywall-popup-expanded-offer-button');
+    button.textContent = spec.text;
+    return button;
+  }
+}
+
+
+class PopupSignIn extends Popup {
+  /**
+   * @param {!JSONObject} config
+   * @param {!JSONObject} authorization
+   */
+  constructor(config, authorization) {
+    super();
+    this.config_ = config;
+    this.authorization_ = authorization;
+  }
+
+  /** @override */
+  render(popup) {
+    const brandText = document.createElement('div');
+    brandText.classList.add('amp-paywall-popup-brand-text');
+    brandText.textContent = 'Vampires die in the light';
+    popup.appendChild(brandText);
+
+    const optionsContainer = document.createElement('div');
+    optionsContainer.classList.add('amp-paywall-popup-signin-options');
+    popup.appendChild(optionsContainer);
+
+    optionsContainer.appendChild(this.renderOption_({
+      vendor: 'subscriptions.google.com',
+      name: 'Google Subscriptions',
+    }));
+    optionsContainer.appendChild(this.renderOption_({
+      vendor: 'subscriptions.bigmarket.com',
+      name: 'Big Market',
+    }));
+    optionsContainer.appendChild(this.renderOption_({
+      vendor: 'subscriptions.vampiretimes.com',
+      name: 'Vampire Times',
+    }));
   }
 
   /**
+   * @param {!JSONObject} service
+   * @return {!Element}
+   * @private
    */
-  alreadySubscriber_() {
-    console.log('QQQ: already subscriber!');
-    const toRemove = toArray(this.popup_.querySelectorAll(
-        '.amp-paywall-popup-state-text' +
-        ',.amp-paywall-popup-offer-text' +
-        ',.amp-paywall-popup-expanded-container' +
-        ',.amp-paywall-popup-already-subscriber-button'));
-    toRemove.forEach(element => {
-      element.parentElement.removeChild(element);
-    });
-    // QQQQ: render sign in options:
+  renderOption_(service) {
+    const serviceEl = document.createElement('button');
+    serviceEl.classList.add('amp-paywall-popup-signin-button');
+    serviceEl.classList.add(service.vendor.replace(/\./g, '-'));
+    serviceEl.textContent = service.name;
+    return serviceEl;
   }
+}
+
+
+function todoText(text, className) {
+  const el = document.createElement('div');
+  el.classList.add('TODO');
+  if (className) {
+    el.classList.add(className);
+  }
+  el.textContent = text;
+  return el;
 }
 
 
@@ -539,7 +652,7 @@ GUIDES.SUBSCRIBER_TOAST = {
       pointTo: '.amp-paywall-toast-text',
     },
     {
-      text: 'This toast must include an action to see subscrpition details.',
+      text: 'This toast must include an action to see subscription details.',
       pointTo: '.amp-paywall-toast-link',
     },
     {

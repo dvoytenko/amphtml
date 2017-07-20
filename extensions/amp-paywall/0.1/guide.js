@@ -84,24 +84,32 @@ export class Guide {
     this.pane_.style.display = '';
 
     this.closeCurrentScene_();
+    this.currentScene_ = scene;
     this.currentSceneEl_ = this.renderScene_(scene);
     this.pane_.appendChild(this.currentSceneEl_);
 
     // Pointers
     setTimeout(() => {
-      // Pointers.
-      scene.sections.forEach((section, index) => {
-        if (section.pointTo) {
-          const sectionEl = this.currentSceneEl_.querySelector(
-              `[index="${index}"]`);
-          const pointer = this.renderPointTo_(section, sectionEl);
-          this.svgPane_.appendChild(pointer);
-        }
-      });
+      this.updatePointers();
     }, 50);
 
     return new Promise(resolve => {
       this.sceneResolver_ = resolve;
+    });
+  }
+
+  updatePointers() {
+    if (!this.currentScene_ || !this.currentSceneEl_) {
+      return;
+    }
+    this.svgPane_.textContent = '';
+    this.currentScene_.sections.forEach((section, index) => {
+      if (section.pointTo) {
+        const sectionEl = this.currentSceneEl_.querySelector(
+            `[index="${index}"]`);
+        const pointer = this.renderPointTo_(section, sectionEl);
+        this.svgPane_.appendChild(pointer);
+      }
     });
   }
 
@@ -220,6 +228,11 @@ export class Guide {
    * @private
    */
   renderPointTo_(section, sectionEl) {
+    const target = this.win.document.querySelector(section.pointTo);
+    if (!target) {
+      console.log('QQQ: target not found: ', section.pointTo);
+      return;
+    }
     const midPos = {
       left: this.pane_.offsetWidth / 2,
       top: this.pane_.offsetHeight / 2,

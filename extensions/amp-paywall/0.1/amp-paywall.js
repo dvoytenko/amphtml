@@ -313,7 +313,7 @@ export class PaywallService {
             closable,
             config,
             authorization,
-            null);//QQQQ: guide?
+            GUIDES.SIGNIN_OPTIONS);
       }
     });
   }
@@ -511,6 +511,8 @@ class PopupSignIn extends Popup {
     brandText.classList.add('amp-paywall-popup-brand-text');
     brandText.textContent = 'Vampires die in the light';
     popup.appendChild(brandText);
+
+    popup.appendChild(todoText('All buttons must be branded'));
 
     const optionsContainer = document.createElement('div');
     optionsContainer.classList.add('amp-paywall-popup-signin-options');
@@ -894,6 +896,28 @@ GUIDES.RET_USER_NO_METER_FINAL = {
   sections: [
     {
       text: 'Next, the user can take the offer or select "already a subscriber".',
+    },
+    {
+      buttonBar: [
+        {
+          buttonText: 'Done',
+          action: {verb: 'close'},
+        },
+      ],
+    },
+  ],
+};
+
+
+GUIDES.SIGNIN_OPTIONS = {
+  title: 'Already subscriber: sign-in',
+  sections: [
+    {
+      text: 'All paywall services configured by the publisher provide their sign-in UIs.',
+      pointTo: '.amp-paywall-popup-signin-button',
+    },
+    {
+      text: 'Order is defined by the publisher and can be adjusted in runtime, e.g. based on the referrer.',
     },
     {
       buttonBar: [

@@ -993,7 +993,12 @@ GUIDES.SIGNIN_OPTIONS = {
       text: 'Order is defined by the publisher and can be adjusted in runtime, e.g. based on the referrer.',
     },
     {
-      text: 'Important! Once sign-in is successful, the authorization should be re-run for this paywall service.',
+      text: `Important! This is a legacy multi-choice hell! Critical to resolve well.
+          Some confusions:
+              (a) In the old world, the user may have signed in with Google Sign-in but account is in Vampire Times. User might be confused which one to select.
+              (b) If user selects Vampire Times, how to bind it back to Google Subscriptions, even if user wanted?
+              (c) If user used X Sign-in, but X does not offer subscriptions, how confusing is that?
+          `,
     },
     {
       buttonBar: [

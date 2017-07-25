@@ -159,7 +159,7 @@ export class PaywallService {
    * @param {string} linkText
    * @private
    */
-  showToast_(text, linkText, guide) {
+  showToast_(text, linkText, link, guide) {
     console.log('QQQ: showToast: ', text, linkText);
     const toast = document.createElement('div');
     toast.classList.add('amp-paywall-toast');
@@ -173,6 +173,9 @@ export class PaywallService {
     toastLink.classList.add('amp-paywall-toast-link');
     toastLink.textContent = linkText;
     toast.appendChild(toastLink);
+    toastLink.onclick = () => {
+      window.open(link, '_blank');
+    };
 
     this.ampdoc.getBody().appendChild(toast);
     setTimeout(() => {
@@ -184,7 +187,7 @@ export class PaywallService {
             setTimeout(() => {
               this.ampdoc.getBody().removeChild(toast);
             }, 1000);
-          }, 2000);
+          }, 7000);
         });
       }, 1000);
     }, 100);
@@ -261,6 +264,7 @@ export class PaywallService {
     this.showToast_(
         `Access via ${authorization.vendor}`,
         'Details',
+        '/examples/subscription.html',
         GUIDES.SUBSCRIBER_TOAST);
   }
 

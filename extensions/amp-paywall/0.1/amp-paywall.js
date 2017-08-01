@@ -872,7 +872,7 @@ GUIDES.NEW_USER_FINAL = {
   title: 'First-time user: that\'s it',
   sections: [
     {
-      text: 'This is it. Authorization is successful. Next, the user can read the content, close the popup, or tap on the popup for more info.',
+      text: 'This is it. Authorization is successful. Next, the user can read the content, close the popup, or tap on the subscribe for more info.',
     },
     {
       buttonBar: [
@@ -917,6 +917,9 @@ GUIDES.RET_USER_NO_METER = {
       text: 'Google Subscription has a product offer. Publisher opts in to use it.',
     },
     {
+      text: 'If only one offer - go straight to checkout.',
+    },
+    {
       buttonBar: [
         {
           buttonText: 'Some details...',
@@ -931,7 +934,7 @@ GUIDES.RET_USER_NO_METER_BLOCKING = {
   title: 'No quota: popup is blocking and not closable',
   sections: [
     {
-      text: 'Popup is immediately shown in an expanded form.',
+      text: 'Popup is immediately shown in an expanded form. If only one offer - go straight to checkout.',
     },
     {
       text: 'The user has to respond to the popup. There\'s no close button.',
@@ -1046,7 +1049,7 @@ GUIDES.ACCESS_AND_EXPANDED_OFFER = {
       pointTo: '.amp-paywall-popup-expanded-offer-button',
     },
     {
-      text: 'If possible, the checkout is 1-click.',
+      text: 'If only one offer - go straight to checkout.',
     },
     {
       text: 'More space for branded messaging as well.',

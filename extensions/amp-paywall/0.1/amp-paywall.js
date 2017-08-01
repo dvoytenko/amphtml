@@ -672,7 +672,7 @@ const GUIDES = {};
 
 
 GUIDES.INTRO = {
-  title: 'Paywall demo',
+  title: 'Paywall demo 1.1',
   sections: [
     {
       text: 'This is the paywall demo using several paywall providers.'

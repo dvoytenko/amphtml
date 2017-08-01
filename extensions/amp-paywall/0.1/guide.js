@@ -63,6 +63,13 @@ export class Guide {
   }
 
   /**
+   * @return {?Element}
+   */
+  getCurrentSceneElement() {
+    return this.currentSceneEl_;
+  }
+
+  /**
    * @param {string} verb
    * @param {function(!GuideActionDef)} handler
    */

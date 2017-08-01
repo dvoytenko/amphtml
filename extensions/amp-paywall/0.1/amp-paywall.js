@@ -50,6 +50,7 @@ export class PaywallService {
 
     this.guide_.onAction('guide', action => {
       this.guide_.show(GUIDES[action.scene]);
+      setTimeout(this.giveSpace_.bind(this), 1);
     });
     this.guide_.onAction('authorize-subscriber', action => {
       this.subscriberInfo_(this.config_, {
@@ -341,10 +342,28 @@ export class PaywallService {
     if (guide) {
       setTimeout(() => {
         this.guide_.show(guide).then(() => {});
+        setTimeout(this.giveSpace_.bind(this), 1);
         this.popup_.onUpdate_ = () => {
           this.guide_.updatePointers();
+          setTimeout(this.giveSpace_.bind(this), 1);
         };
       }, 1000);
+    }
+  }
+
+  /** @private */
+  giveSpace_() {
+    if (!this.popup_ || !this.guide_.getCurrentSceneElement()) {
+      return;
+    }
+    const winHeight = window.innerHeight;
+    const popupHeight = this.popup_.getRoot().offsetHeight;
+    const guideHeight = this.guide_.getCurrentSceneElement().offsetHeight;
+    const currentTop = (winHeight - guideHeight) / 2;
+    const needTop = Math.max(winHeight - guideHeight - popupHeight - 40, 0);
+    if (needTop < currentTop) {
+      this.guide_.getCurrentSceneElement().style.transform =
+          `translateY(${needTop - currentTop}px)`;
     }
   }
 }
@@ -380,6 +399,13 @@ class Popup {
     this.popup_ = null;
     this.graypane_ = null;
     this.resolver_ = null;
+  }
+
+  /**
+   * @return {!Element}
+   */
+  getRoot() {
+    return this.popup_;
   }
 
   /**

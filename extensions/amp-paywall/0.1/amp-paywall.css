@@ -60,6 +60,7 @@
   color: rgb(100, 221, 23);
   margin-left: 0;
   min-width: auto;
+  text-transform: uppercase;
 }
 
 
@@ -72,18 +73,10 @@
   right: 0;
   max-height: 95%;
   height: auto;
-  background: lightgreen;
-  --border: 1px solid gray;
-  box-shadow: 0 0 5px 0 rgba(0,0,0, 0.2);
-  padding: 16px 24px;
+  background: #eee;
+  box-shadow: 0 0 15px 0 rgba(0,0,0, 0.2);
+  padding: 0;
   box-sizing: border-box;
-  /*
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: center;
-  justify-content: flex-start;
-  */
 }
 
 .amp-paywall-popup-graypane {
@@ -106,7 +99,7 @@
   background-image: url('data:image/svg+xml;charset=utf-8,<svg width="13" height="13" viewBox="341 8 13 13" xmlns="http://www.w3.org/2000/svg"><path fill="#4F4F4F" d="M354 9.31L352.69 8l-5.19 5.19L342.31 8 341 9.31l5.19 5.19-5.19 5.19 1.31 1.31 5.19-5.19 5.19 5.19 1.31-1.31-5.19-5.19z" fill-rule="evenodd"/></svg>');
   background-size: 13px 13px;
   background-position: 9px center;
-  background-color: #fff;
+  background-color: #F6F7F7;
   background-repeat: no-repeat;
   box-shadow: 0 0 5px 0 rgba(0,0,0, 0.2);
   border: none;
@@ -117,13 +110,45 @@
   display: none;
 }
 
+.amp-paywall-popup-brand-section {
+  padding: 8px;
+  padding-top: 16px;
+  display: flex;
+  flex-direction: row;
+  background: #fff;
+}
+
+.amp-paywall-popup-brand-icon {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  order: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eee;
+  font-size: 28px;
+  font-family: gophic;
+}
+
+.amp-paywall-popup-brand-texts {
+  flex-grow: 1;
+  order: 1;
+}
+
+.amp-paywall-popup-brand-motto {
+  font-weight: bold;
+}
+
 .amp-paywall-popup-brand-text {
   font-size: smaller;
-  padding: 8px 0;
+  margin-top: 8px;
+  color: #444;
 }
 
 .amp-paywall-popup-state-text {
-  padding: 8px 0;
+  padding: 8px;
+  margin-top: 8px;
 }
 
 .amp-paywall-popup-offer-text {
@@ -131,14 +156,75 @@
   font-weight: 700;
 }
 
-.amp-paywall-popup-already-subscriber-button {
-  display: none;
+.amp-paywall-popup-buttons {
+  padding: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
 }
 
-.amp-paywall-popup-already-subscriber-button {
-  display: block;
-  position: absolute;
-  bottom: 10px;
+.amp-paywall-popup-buttons > button {
+  margin: 0 8px;
+}
+
+.amp-paywall-popup-buttons-vert {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.amp-paywall-popup-buttons-vert > button {
+  margin: 8px;
+}
+
+.amp-paywall-popup-subscribe-google-button {
+  order: 2;
+  background-color: #fff;
+  color: #757575;
+  border-radius: 1px;
+  box-shadow: 0 2px 4px 0 rgba(0,0,0,.25);
+  border: none;
+  background-image: none;
+  white-space: nowrap;
+  display: flex;
+  flex-direction: row;
+  padding: 8px;
+}
+
+.amp-paywall-popup-subscribe-google-button-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.amp-paywall-popup-subscribe-google-button-text {
+  font-size: 16px;
+  --line-height: 48px;
+  font-family: Roboto,arial,sans-serif;
+  font-weight: 500;
+  letter-spacing: .21px;
+  margin-left: 8px;
+}
+
+.amp-paywall-popup-signin-button {
+  order: 1;
+  background-image: none;
+  text-transform: uppercase;
+  background: transparent;
+  border: none;
+  white-space: nowrap;
+}
+
+.amp-paywall-popup-other-signin-button {
+  order: 1;
+  background-image: none;
+  text-transform: uppercase;
+  background: transparent;
+  box-shadow: 0 2px 4px 0 rgba(0,0,0,.25);
+  border: none;
+  white-space: nowrap;
+  padding: 8px;
 }
 
 .amp-paywall-popup:not(.amp-paywall-popup-loading) .i-amphtml-loader {
@@ -153,18 +239,35 @@
   flex-direction: row;
 }
 
-.amp-paywall-popup-signin-button {
-  margin: 16px;
-  background: lightgray;
-  border: 1px solid gray;
-}
-
 .amp-paywall-popup-expanded-offer-button {
   display: block;
   margin: 16px;
   width: 80%;
   background: lightgray;
   border: 1px solid gray;
+}
+
+.amp-paywall-popup-checkout-card {
+  margin: 24px 8px;
+}
+
+.amp-paywall-popup-checkout-product,
+.amp-paywall-popup-checkout-terms {
+  margin: 16px 8px;
+}
+
+.amp-paywall-popup-checkout-product > em {
+  font-style: normal;
+  font-weight: normal;
+  color: rgb(99, 163, 226);
+}
+
+.amp-paywall-popup-checkout-terms {
+  color: #777;
+}
+
+.amp-paywall-popup-checkout-terms > a {
+  color: inherit;
 }
 
 

@@ -316,6 +316,19 @@ export class PaywallService {
             config,
             authorization,
             GUIDES.ACCESS_AND_EXPANDED_OFFER);
+      } else if (res == 'show-checkout') {
+        this.showPopup_(
+            PopupCheckout,
+            closable,
+            config,
+            authorization,
+            GUIDES.CHECKOUT);
+      } else if (res == 'checkout-done') {
+        this.showToast_(
+            'Access via Google Subscriptions',
+            'Manage',
+            '/examples/subscription.html',
+            null);
       } else if (res == 'show-signin-options') {
         this.showPopup_(
             PopupSignIn,
@@ -332,6 +345,31 @@ export class PaywallService {
           this.guide_.updatePointers();
         };
       }, 1000);
+    }
+  }
+}
+
+
+function expandTemplate(id, container) {
+  const template = document.getElementById(id);
+  if (!template) {
+    throw new Error('template not found: ' + id);
+  }
+  const children = template.content.children;
+  for (let i = 0; i < children.length; i++) {
+    container.appendChild(children[i].cloneNode(true));
+  }
+  while (true) {
+    const ref = container.querySelector('ref[template]');
+    if (!ref) {
+      break;
+    }
+    const div = document.createElement('div');
+    expandTemplate(ref.getAttribute('template'), div);
+    if (div.children.length > 0) {
+      ref.parentElement.replaceChild(div.children[0], ref);
+    } else {
+      ref.textContent = '!!!NOT FOUND!!!';
     }
   }
 }
@@ -414,26 +452,28 @@ class PopupShortOffer extends Popup {
   /**
    */
   render(popup) {
-    const brandText = document.createElement('div');
-    brandText.classList.add('amp-paywall-popup-brand-text');
-    brandText.textContent = '😬 Vampires die in the light';
-    popup.appendChild(brandText);
+    expandTemplate('PopupShortOffer', popup);
 
+    const stateText = popup.querySelector('.amp-paywall-popup-state-text');
     if (this.authorization_.meter) {
-      const stateText = document.createElement('div');
-      stateText.classList.add('amp-paywall-popup-state-text');
       stateText.textContent = this.authorization_.meter.text;
-      popup.appendChild(stateText);
+    } else {
+      stateText.style.display = 'none';
     }
 
-    const offerText = document.createElement('div');
-    offerText.classList.add('amp-paywall-popup-offer-text');
+    const offerText = popup.querySelector('.amp-paywall-popup-offer-text');
     offerText.textContent = this.authorization_.offer.text + ' via ' +
         this.authorization_.vendor;
-    popup.appendChild(offerText);
+    offerText.style.display = 'none';
 
-    popup.addEventListener('click', () => {
+    const subscribeGoogleButton = popup.querySelector('.amp-paywall-popup-subscribe-google-button');
+    subscribeGoogleButton.addEventListener('click', () => {
       this.close('show-expanded-offer');
+    });
+
+    const signinButton = popup.querySelector('.amp-paywall-popup-signin-button');
+    signinButton.addEventListener('click', () => {
+      this.close('show-signin-options');
     });
   }
 }
@@ -453,23 +493,14 @@ class PopupExpandedOffer extends Popup {
   /** @override */
   render(popup) {
     popup.style.minHeight = '200px';
+    expandTemplate('PopupExpandedOffer', popup);
 
-    const brandText = document.createElement('div');
-    brandText.classList.add('amp-paywall-popup-brand-text');
-    brandText.textContent = '😬 Vampires die in the light';
-    popup.appendChild(brandText);
-
-    const expandedContainer = document.createElement('div');
-    expandedContainer.classList.add('amp-paywall-popup-expanded-container');
-    popup.appendChild(expandedContainer);
+    const expandedContainer = popup.querySelector('.amp-paywall-popup-expanded-container');
+    expandedContainer.style.minHeight = '80px';
     this.expandedContainer_ = expandedContainer;
 
-    const alreadySubscriberButton = document.createElement('button');
-    alreadySubscriberButton.classList.add('amp-paywall-popup-already-subscriber-button');
-    alreadySubscriberButton.textContent = 'Already subscriber';
-    popup.appendChild(alreadySubscriberButton);
-    alreadySubscriberButton.addEventListener('click', e => {
-      e.stopPropagation();
+    const signinButton = popup.querySelector('.amp-paywall-popup-signin-button');
+    signinButton.addEventListener('click', () => {
       this.close('show-signin-options');
     });
 
@@ -509,7 +540,34 @@ class PopupExpandedOffer extends Popup {
     const button = document.createElement('button');
     button.classList.add('amp-paywall-popup-expanded-offer-button');
     button.textContent = spec.text;
+    button.onclick = () => {
+      this.close('show-checkout');
+    };
     return button;
+  }
+}
+
+
+class PopupCheckout extends Popup {
+  /**
+   * @param {!JSONObject} config
+   * @param {!JSONObject} authorization
+   */
+  constructor(config, authorization) {
+    super();
+    this.config_ = config;
+    this.authorization_ = authorization;
+  }
+
+  /** @override */
+  render(popup) {
+    expandTemplate('PopupCheckout', popup);
+    const subscribeButton =
+        popup.querySelector('.amp-paywall-popup-subscribe-google-button-text');
+    subscribeButton.textContent = 'SUBSCRIBE';
+    subscribeButton.onclick = () => {
+      this.close('checkout-done');
+    };
   }
 }
 
@@ -527,42 +585,9 @@ class PopupSignIn extends Popup {
 
   /** @override */
   render(popup) {
-    const brandText = document.createElement('div');
-    brandText.classList.add('amp-paywall-popup-brand-text');
-    brandText.textContent = '😬 Vampires die in the light';
-    popup.appendChild(brandText);
-
-    popup.appendChild(todoText('All buttons must be branded'));
-
-    const optionsContainer = document.createElement('div');
-    optionsContainer.classList.add('amp-paywall-popup-signin-options');
-    popup.appendChild(optionsContainer);
-
-    optionsContainer.appendChild(this.renderOption_({
-      vendor: 'subscriptions.google.com',
-      name: 'Google Subscriptions',
-    }));
-    optionsContainer.appendChild(this.renderOption_({
-      vendor: 'subscriptions.bigmarket.com',
-      name: 'Big Market',
-    }));
-    optionsContainer.appendChild(this.renderOption_({
-      vendor: 'subscriptions.vampiretimes.com',
-      name: 'Vampire Times',
-    }));
-  }
-
-  /**
-   * @param {!JSONObject} service
-   * @return {!Element}
-   * @private
-   */
-  renderOption_(service) {
-    const serviceEl = document.createElement('button');
-    serviceEl.classList.add('amp-paywall-popup-signin-button');
-    serviceEl.classList.add(service.vendor.replace(/\./g, '-'));
-    serviceEl.textContent = service.name;
-    return serviceEl;
+    expandTemplate('PopupSignIn', popup);
+    popup.querySelector('.amp-paywall-popup-subscribe-google-button-text')
+        .textContent = 'Google Subscriptions';
   }
 }
 
@@ -580,38 +605,7 @@ class PopupSubscriptionBroken extends Popup {
 
   /** @override */
   render(popup) {
-    const brandText = document.createElement('div');
-    brandText.classList.add('amp-paywall-popup-brand-text');
-    brandText.textContent = '😬 Vampires die in the light';
-    popup.appendChild(brandText);
-
-    popup.appendChild(todoText('How do we address this?'));
-
-    const optionsContainer = document.createElement('div');
-    optionsContainer.classList.add('amp-paywall-popup-signin-options');
-    popup.appendChild(optionsContainer);
-
-    optionsContainer.appendChild(this.renderOption_({
-      vendor: 'subscriptions.google.com',
-      name: 'Fix',
-    }));
-    optionsContainer.appendChild(this.renderOption_({
-      vendor: 'subscriptions.bigmarket.com',
-      name: 'Cancel',
-    }));
-  }
-
-  /**
-   * @param {!JSONObject} service
-   * @return {!Element}
-   * @private
-   */
-  renderOption_(service) {
-    const serviceEl = document.createElement('button');
-    serviceEl.classList.add('amp-paywall-popup-signin-button');
-    serviceEl.classList.add(service.vendor.replace(/\./g, '-'));
-    serviceEl.textContent = service.name;
-    return serviceEl;
+    expandTemplate('PopupSubscriptionBroken', popup);
   }
 }
 
@@ -796,7 +790,10 @@ GUIDES.NEW_USER_BRANDING = {
   sections: [
     {
       text: 'Some branding is rendered from the publisher.',
-      pointTo: '.amp-paywall-popup-brand-text',
+      pointTo: '.amp-paywall-popup-brand-icon',
+    },
+    {
+      text: 'The branding can come from access.manifest and defaulted to normal site manifest.',
     },
     {
       buttonBar: [
@@ -832,7 +829,7 @@ GUIDES.NEW_USER_OFFER = {
   sections: [
     {
       text: 'The subscription is offered.',
-      pointTo: '.amp-paywall-popup-offer-text',
+      pointTo: '.amp-paywall-popup-subscribe-google-button',
     },
     {
       buttonBar: [
@@ -850,10 +847,6 @@ GUIDES.NEW_USER_FINAL = {
   sections: [
     {
       text: 'This is it. Authorization is successful. Next, the user can read the content, close the popup, or tap on the popup for more info.',
-    },
-    {
-      class: 'TODO',
-      text: 'TODO: what about "already subscriber"?',
     },
     {
       buttonBar: [
@@ -915,7 +908,7 @@ GUIDES.RET_USER_NO_METER_BLOCKING = {
       text: 'Popup is immediately shown in an expanded form.',
     },
     {
-      text: 'This UI is blocked. The user has to respond to the popup. There\'s no close button.',
+      text: 'The user has to respond to the popup. There\'s no close button.',
       pointTo: '.amp-paywall-popup',
     },
     {
@@ -937,6 +930,9 @@ GUIDES.RET_USER_NO_METER_OFFER = {
       pointTo: '.amp-paywall-popup-expanded-offer-button',
     },
     {
+      text: 'If there\'s only one offer - bypass this view and go straight to checkout.',
+    },
+    {
       text: 'Important! Once subscription is successful, the authorization should be re-run for this paywall service.',
     },
     {
@@ -955,7 +951,7 @@ GUIDES.RET_USER_NO_METER_ALREADY_SUBSCR = {
   sections: [
     {
       text: 'Maybe the user is already a subscriber?',
-      pointTo: '.amp-paywall-popup-already-subscriber-button',
+      pointTo: '.amp-paywall-popup-signin-button',
     },
     {
       buttonBar: [
@@ -972,7 +968,7 @@ GUIDES.RET_USER_NO_METER_FINAL = {
   title: 'No quota: final',
   sections: [
     {
-      text: 'Next, the user can take the offer or select "already a subscriber".',
+      text: 'Next, the user can take the offer and go to checkout, or select "already a subscriber".',
     },
     {
       buttonBar: [
@@ -1054,6 +1050,102 @@ GUIDES.SUBSCRIBER_BROKEN = {
       buttonBar: [
         {
           buttonText: 'Close',
+          action: {verb: 'close'},
+        },
+      ],
+    },
+  ],
+};
+
+
+GUIDES.CHECKOUT = {
+  title: 'Checkout',
+  sections: [
+    {
+      text: 'User is ready to checkout.',
+    },
+    {
+      text: 'This is an inline checkout flow provided by the iframe. It\'s not yet clear if this is ok. If not ok, this will have to be a 1p dialog.',
+    },
+    {
+      buttonBar: [
+        {
+          buttonText: 'Some details...',
+          action: {verb: 'guide', scene: 'CHECKOUT_CARD'},
+        },
+      ],
+    },
+  ],
+};
+
+GUIDES.CHECKOUT_CARD = {
+  title: 'Checkout: payment info',
+  sections: [
+    {
+      text: 'Payment info is shown',
+      pointTo: '.amp-paywall-popup-checkout-card',
+    },
+    {
+      text: 'Important! What would happen if user wants to pick another payment instrument? Most likely have to go to the 1p dialog and finish checkout there.',
+    },
+    {
+      buttonBar: [
+        {
+          buttonText: 'Next',
+          action: {verb: 'guide', scene: 'CHECKOUT_PRODUCT'},
+        },
+      ],
+    },
+  ],
+};
+
+GUIDES.CHECKOUT_PRODUCT = {
+  title: 'Checkout: charge',
+  sections: [
+    {
+      text: 'User is explained unambiguously when and what the charges will be and how often.',
+      pointTo: '.amp-paywall-popup-checkout-product',
+    },
+    {
+      buttonBar: [
+        {
+          buttonText: 'Next',
+          action: {verb: 'guide', scene: 'CHECKOUT_TERMS'},
+        },
+      ],
+    },
+  ],
+};
+
+GUIDES.CHECKOUT_TERMS = {
+  title: 'Checkout: terms',
+  sections: [
+    {
+      text: 'Among other things, terms will explain the multi-device sign-in opt-in.',
+      pointTo: '.amp-paywall-popup-checkout-terms',
+    },
+    {
+      buttonBar: [
+        {
+          buttonText: 'Next',
+          action: {verb: 'guide', scene: 'CHECKOUT_CONFIRM'},
+        },
+      ],
+    },
+  ],
+};
+
+GUIDES.CHECKOUT_CONFIRM = {
+  title: 'Checkout: subscribe',
+  sections: [
+    {
+      text: 'Subscribe and done.',
+      pointTo: '.amp-paywall-popup-subscribe-google-button',
+    },
+    {
+      buttonBar: [
+        {
+          buttonText: 'Done',
           action: {verb: 'close'},
         },
       ],

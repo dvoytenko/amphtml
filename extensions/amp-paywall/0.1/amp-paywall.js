@@ -181,16 +181,21 @@ export class PaywallService {
     this.ampdoc.getBody().appendChild(toast);
     setTimeout(() => {
       toast.classList.add('amp-paywall-toast-shown');
-      setTimeout(() => {
-        this.guide_.show(guide).then(() => {
+      const closeToast = () => {
+        setTimeout(() => {
+          toast.classList.remove('amp-paywall-toast-shown');
           setTimeout(() => {
-            toast.classList.remove('amp-paywall-toast-shown');
-            setTimeout(() => {
-              this.ampdoc.getBody().removeChild(toast);
-            }, 1000);
-          }, 7000);
-        });
-      }, 1000);
+            this.ampdoc.getBody().removeChild(toast);
+          }, 1000);
+        }, 7000);
+      };
+      if (guide) {
+        setTimeout(() => {
+          this.guide_.show(guide).then(closeToast);
+        }, 1000);
+      } else {
+        closeToast();
+      }
     }, 100);
   }
 

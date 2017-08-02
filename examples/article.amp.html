@@ -14,8 +14,37 @@
       background: white;
     }
 
+    header#top-bar {
+      background: white;
+      border-bottom: 1px solid #e2e2e2;
+      display: flex;
+      flex-direction: row;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+      order: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f5f5f5;
+      font-size: 20px;
+      font-family: gophic;
+    }
+
     .brand-logo {
       font-family: 'Roboto', Arial, Helvetica, sans-serif;
+      flex-grow: 1;
+      order: 2;
+      margin-left: 16px;
+      display: flex;
+      align-items: center;
+    }
+
+    main {
+      background: #f7f7f7;
     }
 
     .ad-container {
@@ -30,33 +59,6 @@
     /* In the shadow-doc mode, the parent shell already has header and nav. */
     .amp-shadow header {
       display: none;
-    }
-
-    .lightbox {
-      background: #222;
-    }
-
-    .lightbox-content {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-
-      display: flex;
-      flex-direction: column;
-      flex-wrap: nowrap;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .lightbox-content p {
-      color: #fff;
-      padding: 15px;
-    }
-
-    .lightbox amp-img {
-      width: 100%;
     }
 
     figure {
@@ -168,54 +170,8 @@
       margin: 0;
     }
 
-    amp-app-banner {
-      padding: 10px;
-    }
-
-    amp-app-banner .content {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
     amp-img {
       background-color: #f4f4f4;
-    }
-
-    amp-app-banner amp-img {
-      background-color: transparent;
-      margin-right: 15px
-    }
-
-    amp-app-banner .description {
-      margin-right: 20px;
-    }
-
-    amp-app-banner h5 {
-      margin: 0;
-    }
-
-    amp-app-banner p {
-      font-size: 10px;
-      margin: 3px 0;
-    }
-
-    amp-app-banner .actions button {
-      padding: 5px;
-      width: 70px;
-      border: 1px solid #aaa;
-      font-size: 8px;
-      background: #fff;
-    }
-
-    amp-app-banner .actions {
-      text-align: right;
-      font-size: 14px;
-    }
-
-    amp-sidebar {
-      width: 200px;
-      background: white;
     }
 
     nav ul {
@@ -271,11 +227,6 @@
         color: #2294dd;
     }
 
-    header#top-bar {
-      background: white;
-      border-bottom: 1px solid #e2e2e2;
-    }
-
     header#article-desc {
       background: rgb(250, 250, 250);
       padding: 20px;
@@ -291,20 +242,10 @@
        background: #1b1b1b;
        color: white;
      }
-
-     #lightbox-close-btn {
-       font-family: Helvetica, sans-serif;
-       color: white;
-       position: absolute;
-       top: 0px;
-       right: 0px;
-       padding: 20px;
-     }
   </style>
   <link href='https://fonts.googleapis.com/css?family=Georgia|Open+Sans|Roboto' rel='stylesheet' type='text/css'>
   <script async custom-element="amp-video" src="/dist/v0/amp-video-0.1.max.js"></script>
   <script async custom-element="amp-ad" src="/dist/v0/amp-ad-0.1.max.js"></script>
-  <script async custom-element="amp-sidebar" src="/dist/v0/amp-sidebar-0.1.max.js"></script>
   <script async custom-element="amp-analytics" src="/dist/v0/amp-analytics-0.1.max.js"></script>
   <script async custom-element="amp-paywall" src="/dist/v0/amp-paywall-0.1.max.js"></script>
   <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
@@ -312,51 +253,17 @@
   <link rel="manifest" href="medium-manifest.json">
 </head>
 <body>
-  <amp-sidebar id="sidebar" layout="nodisplay">
-    <nav>
-      <ul>
-        <li class="active">
-          <a href="#">
-            Home
-          </a>
-        </li>
-        <li><a href="#">Link 1</a></li>
-        <li><a href="#">Link 2</a></li>
-        <li><a href="#">Link 3</a></li>
-        <li><a href="#">Link 4</a></li>
-        <li><a href="#section1">Section 1</a></li>
-        <li><a href="#section2">Section 2</a></li>
-        <li><a href="#section3">Section 3</a></li>
-      </ul>
-    </nav>
-  </amp-sidebar>
-  <amp-app-banner layout="nodisplay" id="demo-app-banner-2134">
-    <div class="content">
-      <amp-img src="https://cdn-images-1.medium.com/max/800/1*JLegdtjFMNgqHgnxdd04fg.png"
-               width="40" height="34"></amp-img>
-      <div class="description">
-        <h5>Medium App</h5>
-        <p>Experience a richer experience on our mobile app!</p>
-      </div>
-      <div class="actions">
-        <button open-button>Open In App</button>
-      </div>
-    </div>
-  </amp-app-banner>
-
   <header id="top-bar">
-    <button on="tap:sidebar.toggle" class="menu" title="Toggle Sidebar" >
-      ☰
-    </button>
+    <div class="brand-icon">VC</div>
     <span class="brand-logo">
-      PublisherLogo
+      Vampire Chronicles
     </span>
   </header>
 
   <main role="main">
     <article>
       <header id="article-desc">
-        <h1 itemprop="headline">Lorem Ipsum</h1>
+        <h1 itemprop="headline">Latin language in vampire culture</h1>
         <div class="header-author">
           <amp-img src="img/sample.jpg" id="author-avatar" placeholder
             height="16" width="16">
@@ -372,16 +279,12 @@
             srcset="img/hero@1x.jpg 1x, img/hero@2x.jpg 2x"
             layout="responsive" width="360" placeholder
             alt="Picture of two chairs on a lake shore with big pine trees"
-            title="Opens image in a lightbox"
-            role="button" on="tap:headline-image-lightbox"
             height="216" tabindex="0">
         </amp-img>
         <figcaption class='image'>
           Fusce pretium tempor justo, vitae.
         </figcaption>
       </figure>
-
-      <amp-image-lightbox id="headline-image-lightbox" layout="nodisplay"></amp-image-lightbox>
 
       <div class="content-container">
         <div class="jump-to">
@@ -490,35 +393,12 @@
                 src="img/sea@1x.jpg"
                 srcset="img/sea@1x.jpg 1x, img/sea@2x.jpg 2x"
                 layout="responsive" width="320"
-                on="tap:inline-img-lightbox"
                 alt="Fusce pretium tempor justo, vitae consequat dolor maximus eget."
                 height="180">
             </amp-img>
             <figcaption class='image'>
               Fusce pretium tempor justo, vitae consequat dolor maximus eget.
             </figcaption>
-            <amp-lightbox id="inline-img-lightbox" class="lightbox"
-                layout="nodisplay">
-
-              <div class="lightbox-content">
-                <div id="lightbox-close-btn"
-                  on="tap:inline-img-lightbox.close"
-                  role="button"
-                  tabindex="0">
-                  <h1>x</h1>
-                </div>
-                <amp-img id="floating-headline-img"
-                    src="img/sea@1x.jpg"
-                    srcset="img/sea@1x.jpg 1x, img/sea@2x.jpg 2x"
-                    alt="Image of a sea"
-                    placeholder
-                    width="360" height="216" layout="responsive">
-                </amp-img>
-                <p>
-                  Fusce pretium tempor justo, vitae consequat dolor maximus eget.
-                </p>
-              </div>
-            </amp-lightbox>
           </figure>
 
           <p>
@@ -572,5 +452,105 @@
   </footer>
 
 
+  <div id="templates" style="display-none">
+    <template id="branding">
+      <div class="amp-paywall-popup-brand-section">
+        <div class="amp-paywall-popup-brand-icon">VC</div>
+        <div class="amp-paywall-popup-brand-texts">
+          <div class="amp-paywall-popup-brand-motto">Vampires die in the light</div>
+          <div class="amp-paywall-popup-brand-text">
+            The leading source of news all things vampires.
+            Award winning and otherwise very awesome.
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <template id="GoogleSubscribeButton">
+      <button class="amp-paywall-popup-subscribe-google-button">
+        <div class="amp-paywall-popup-subscribe-google-button-icon">
+          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" viewBox="0 0 48 48" class="abcRioButtonSvg"><g><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path><path fill="none" d="M0 0h48v48H0z"></path></g></svg>
+        </div>
+        <div class="amp-paywall-popup-subscribe-google-button-text">
+          Subscribe with Google
+        </div>
+      </button>
+    </template>
+
+    <template id="PopupShortOffer">
+      <ref template="branding"></ref>
+
+      <div class="amp-paywall-popup-state-text"></div>
+      <div class="amp-paywall-popup-offer-text"></div>
+
+      <div class="amp-paywall-popup-buttons">
+        <ref template="GoogleSubscribeButton"></ref>
+        <button class="amp-paywall-popup-signin-button">
+          Already subscriber
+        </button>
+      </div>
+    </template>
+
+    <template id="PopupExpandedOffer">
+      <ref template="branding"></ref>
+
+      <div class="amp-paywall-popup-expanded-container"></div>
+
+      <div class="amp-paywall-popup-buttons">
+        <button class="amp-paywall-popup-signin-button">
+          Already subscriber
+        </button>
+      </div>
+    </template>
+
+    <template id="PopupSignIn">
+      <ref template="branding"></ref>
+
+      <div class="amp-paywall-popup-buttons-vert">
+        <ref template="GoogleSubscribeButton"></ref>
+        <button class="amp-paywall-popup-other-signin-button">
+          Big Market
+        </button>
+        <button class="amp-paywall-popup-other-signin-button">
+          Vampire Chronicles
+        </button>
+      </div>
+    </template>
+
+    <template id="PopupSubscriptionBroken">
+      <ref template="branding"></ref>
+
+      <div class="amp-paywall-popup-state-text">There is a problem with your subscription</div>
+
+      <div class="amp-paywall-popup-buttons">
+        <button class="amp-paywall-popup-other-signin-button">
+          Fix
+        </button>
+        <button class="amp-paywall-popup-other-signin-button">
+          Cancel
+        </button>
+      </div>
+    </template>
+
+    <template id="PopupCheckout">
+      <ref template="branding"></ref>
+
+      <div class="amp-paywall-popup-checkout-card">
+        Visa-1234 <span class="chevron" style="font-size: x-small;">&#x25BC;</span>
+      </div>
+
+      <div class="amp-paywall-popup-checkout-product">
+        <em>14 day</em> free trial. <em>$9.99/month</em> starting Aug 31, 2017. Cancel any time.
+      </div>
+
+      <div class="amp-paywall-popup-checkout-terms">
+        By tapping "Subscribe", you agree to the <a href="#">Terms of Service</a>.
+      </div>
+
+      <div class="amp-paywall-popup-buttons">
+        <ref template="GoogleSubscribeButton"></ref>
+      </div>
+    </template>
+  </div>
 </body>
 </html>

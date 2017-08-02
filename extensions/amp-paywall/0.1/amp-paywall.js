@@ -672,7 +672,7 @@ const GUIDES = {};
 
 
 GUIDES.INTRO = {
-  title: 'Paywall demo 1.1',
+  title: 'Paywall demo 1.2',
   sections: [
     {
       text: 'This is the paywall demo using several paywall providers.'
@@ -931,7 +931,7 @@ GUIDES.RET_USER_NO_METER = {
 };
 
 GUIDES.RET_USER_NO_METER_BLOCKING = {
-  title: 'No quota: popup is blocking and not closable',
+  title: 'No quota: popup is not closable',
   sections: [
     {
       text: 'Popup is immediately shown in an expanded form. If only one offer - go straight to checkout.',

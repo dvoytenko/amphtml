@@ -29,7 +29,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #f5f5f5;
       font-size: 20px;
       font-family: gophic;
     }
@@ -242,6 +241,21 @@
        background: #1b1b1b;
        color: white;
      }
+
+     .unauthorized .premium {
+        display: none;
+     }
+
+     .unauthorized-disclaimer {
+        display: none;
+        padding: 16px;
+        color: gray;
+        text-align: center;
+     }
+
+     .unauthorized .unauthorized-disclaimer {
+        display: block;
+     }
   </style>
   <link href='https://fonts.googleapis.com/css?family=Georgia|Open+Sans|Roboto' rel='stylesheet' type='text/css'>
   <script async custom-element="amp-video" src="/dist/v0/amp-video-0.1.max.js"></script>
@@ -254,7 +268,12 @@
 </head>
 <body>
   <header id="top-bar">
-    <div class="brand-icon">VC</div>
+    <div class="brand-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
+          width="40px" height="40px" viewBox="0 0 100 100" enable-background="new 0 0 100 100">
+        <path fill="#000000" d="M99.945,33.019c-4.848-2.65-11.104-3.301-17.101-2.413c-11.481,1.7-20.451,8.93-26.209,20.051  c-2.054-3.019-3.296-6.817-3.329-10.955c-1.551,2.128-2.673,4.684-3.24,7.488c-0.567-2.805-1.689-5.36-3.24-7.488  c-0.033,4.21-1.315,8.074-3.436,11.118c-5.754-11.213-14.752-18.506-26.289-20.214C11.103,29.718,4.847,30.368,0,33.019  c11.051,1.697,14.079,8.617,12.227,15.589c8.736-2.634,17.313,6.145,14.513,16.375c2.322-1.115,5.657-1.422,8.708-1.018  c7.296,0.967,12.496,8.484,14.52,17.535c0.001-0.01,0.003-0.022,0.005-0.034c0.001,0.012,0.004,0.024,0.005,0.034  c2.025-9.051,7.224-16.568,14.521-17.535c3.05-0.404,6.385-0.098,8.706,1.018c-2.8-10.229,5.778-19.008,14.514-16.375  C85.866,41.636,88.895,34.716,99.945,33.019z"/>
+      </svg>
+    </div>
     <span class="brand-logo">
       Vampire Chronicles
     </span>
@@ -306,7 +325,7 @@
             Maecenas sollicitudin felis aliquam tortor vulputate,
             ac posuere velit semper.
           </p>
-          <p>
+          <p class="premium">
             Fusce pretium tempor justo, vitae consequat dolor maximus eget.
             Aliquam iaculis tincidunt quam sed maximus. Suspendisse faucibus
             ornare sodales. Nullam id dolor vitae arcu consequat ornare a
@@ -315,7 +334,7 @@
             Nullam in libero nisi.
           </p>
 
-          <div class="ad-container">
+          <div class="ad-container premium">
             <amp-ad width=300 height=250
                 type="a9"
                 data-aax_size="300x250"
@@ -324,7 +343,7 @@
             </amp-ad>
           </div>
 
-          <p>
+          <p class="premium">
             Sed pharetra semper fringilla. Nulla fringilla, neque eget
             varius suscipit, mi turpis congue odio, quis dignissim nisi
             nulla at erat. Duis non nibh vel erat vehicula hendrerit eget
@@ -341,7 +360,7 @@
             pellentesque, id placerat elit ornare.
           </p>
 
-          <figure>
+          <figure class="premium">
             <amp-video
               autoplay
               src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"
@@ -355,7 +374,7 @@
             </figcaption>
           </figure>
 
-          <p>
+          <p class="premium">
             Sed pharetra semper fringilla. Nulla fringilla, neque eget
             varius suscipit, mi turpis congue odio, quis dignissim nisi
             nulla at erat. Duis non nibh vel erat vehicula hendrerit eget
@@ -372,7 +391,7 @@
             pellentesque, id placerat elit ornare.
           </p>
 
-          <p id="section1">
+          <p id="section1" class="premium">
             Curabitur convallis, urna quis pulvinar feugiat, purus diam
             posuere turpis, sit amet tincidunt purus justo et mi. Donec
             sapien urna, aliquam ut lacinia quis, varius vitae ex.
@@ -388,7 +407,7 @@
             nec lectus finibus rutrum vel sed orci.
           </p>
 
-          <figure>
+          <figure class="premium">
             <amp-img placeholder
                 src="img/sea@1x.jpg"
                 srcset="img/sea@1x.jpg 1x, img/sea@2x.jpg 2x"
@@ -401,7 +420,7 @@
             </figcaption>
           </figure>
 
-          <p>
+          <p class="premium">
             Cum sociis natoque penatibus et magnis dis parturient montes,
             nascetur ridiculus mus. Nulla et viverra turpis. Fusce
             viverra enim eget elit blandit, in finibus enim blandit. Integer
@@ -414,14 +433,14 @@
             Aliquam erat volutpat.
           </p>
 
-          <div class="ad-container">
+          <div class="ad-container premium">
             <amp-ad width=300 height=200
                 type="adsense"
                 data-ad-client="ca-pub-9350112648257122">
             </amp-ad>
           </div>
 
-          <p id="section2">
+          <p id="section2" class="premium">
             Morbi at velit vitae eros congue congue venenatis non dui.
             Sed lacus sem, feugiat sed elementum sed, maximus sed lacus.
             Integer accumsan magna in sagittis pharetra. Class aptent taciti
@@ -431,6 +450,10 @@
             felis aliquet maximus. Class aptent taciti sociosqu ad litora
             torquent per conubia nostra, per inceptos himenaeos.
           </p>
+
+          <div class="unauthorized-disclaimer">
+            Become a subscriber to read more
+          </div>
         </div>
         <!--
           Slots spec is not implemented yet by any browser. Will use an older version via `<content>` tag.
@@ -455,7 +478,12 @@
   <div id="templates" style="display-none">
     <template id="branding">
       <div class="amp-paywall-popup-brand-section">
-        <div class="amp-paywall-popup-brand-icon">VC</div>
+        <div class="amp-paywall-popup-brand-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
+              width="64px" height="64px" viewBox="0 0 100 100" enable-background="new 0 0 100 100">
+            <path fill="#000000" d="M99.945,33.019c-4.848-2.65-11.104-3.301-17.101-2.413c-11.481,1.7-20.451,8.93-26.209,20.051  c-2.054-3.019-3.296-6.817-3.329-10.955c-1.551,2.128-2.673,4.684-3.24,7.488c-0.567-2.805-1.689-5.36-3.24-7.488  c-0.033,4.21-1.315,8.074-3.436,11.118c-5.754-11.213-14.752-18.506-26.289-20.214C11.103,29.718,4.847,30.368,0,33.019  c11.051,1.697,14.079,8.617,12.227,15.589c8.736-2.634,17.313,6.145,14.513,16.375c2.322-1.115,5.657-1.422,8.708-1.018  c7.296,0.967,12.496,8.484,14.52,17.535c0.001-0.01,0.003-0.022,0.005-0.034c0.001,0.012,0.004,0.024,0.005,0.034  c2.025-9.051,7.224-16.568,14.521-17.535c3.05-0.404,6.385-0.098,8.706,1.018c-2.8-10.229,5.778-19.008,14.514-16.375  C85.866,41.636,88.895,34.716,99.945,33.019z"/>
+          </svg>
+        </div>
         <div class="amp-paywall-popup-brand-texts">
           <div class="amp-paywall-popup-brand-motto">Vampires die in the light</div>
           <div class="amp-paywall-popup-brand-text">
@@ -463,6 +491,12 @@
             Award winning and otherwise very awesome.
           </div>
         </div>
+      </div>
+    </template>
+
+    <template id="status">
+      <div class="amp-paywall-popup-status-bar">
+        <div class="amp-paywall-popup-state-text"></div>
       </div>
     </template>
 
@@ -478,15 +512,16 @@
     </template>
 
     <template id="PopupShortOffer">
+      <ref template="status"></ref>
+
       <ref template="branding"></ref>
 
-      <div class="amp-paywall-popup-state-text"></div>
       <div class="amp-paywall-popup-offer-text"></div>
 
       <div class="amp-paywall-popup-buttons">
         <ref template="GoogleSubscribeButton"></ref>
         <button class="amp-paywall-popup-signin-button">
-          Already subscriber
+          Sign In
         </button>
       </div>
     </template>
@@ -497,8 +532,9 @@
       <div class="amp-paywall-popup-expanded-container"></div>
 
       <div class="amp-paywall-popup-buttons">
+        <ref template="GoogleSubscribeButton"></ref>
         <button class="amp-paywall-popup-signin-button">
-          Already subscriber
+          Sign In
         </button>
       </div>
     </template>
@@ -548,6 +584,7 @@
       </div>
 
       <div class="amp-paywall-popup-buttons">
+        <div class="amp-paywall-popup-buttons-google-source">Google</div>
         <ref template="GoogleSubscribeButton"></ref>
       </div>
     </template>

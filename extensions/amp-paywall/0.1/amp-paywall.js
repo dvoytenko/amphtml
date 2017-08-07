@@ -92,6 +92,7 @@ export class PaywallService {
       }, GUIDES.RET_USER_METERED);
     });
     this.guide_.onAction('not-authorized-no-meter', action => {
+      document.documentElement.classList.add('unauthorized');
       this.showPopup_(PopupExpandedOffer, false, this.config_, {
         vendor: 'Google Subscriptions',
         access: false,
@@ -530,6 +531,15 @@ class PopupExpandedOffer extends Popup {
     expandedContainer.style.minHeight = '80px';
     this.expandedContainer_ = expandedContainer;
 
+    const subscribeGoogleButton = popup.querySelector('.amp-paywall-popup-subscribe-google-button');
+    subscribeGoogleButton.addEventListener('click', () => {
+      this.close('show-checkout');
+    });
+    popup.querySelector('.amp-paywall-popup-subscribe-google-button-text')
+        .textContent = 'SUBSCRIBE';
+    this.subscribeGoogleButton_ = subscribeGoogleButton;
+    this.subscribeGoogleButton_.disabled = true;
+
     const signinButton = popup.querySelector('.amp-paywall-popup-signin-button');
     signinButton.addEventListener('click', () => {
       this.close('show-signin-options');
@@ -554,10 +564,10 @@ class PopupExpandedOffer extends Popup {
 
   /** @private */
   expandLoaded_() {
-    this.expandedContainer_.appendChild(todoText('Brand with "Google Subscriptions"'));
+    this.subscribeGoogleButton_.disabled = false;
     this.expandedContainer_.appendChild(this.renderOfferButton_({
       text: '14 day free, $8/mo after',
-    }));
+    }, true));
     this.expandedContainer_.appendChild(this.renderOfferButton_({
       text: '$80/year',
     }));
@@ -567,14 +577,34 @@ class PopupExpandedOffer extends Popup {
   }
 
   /** @private */
-  renderOfferButton_(spec) {
-    const button = document.createElement('button');
-    button.classList.add('amp-paywall-popup-expanded-offer-button');
-    button.textContent = spec.text;
-    button.onclick = () => {
-      this.close('show-checkout');
+  renderOfferButton_(spec, selected) {
+    const div = document.createElement('div');
+    div.classList.add('amp-paywall-popup-expanded-offer-button');
+    if (selected) {
+      div.classList.add('selected');
+    }
+    div.onclick = () => {
+      this.setSelected_(div);
     };
-    return button;
+
+    const text = document.createElement('div');
+    text.classList.add('amp-paywall-popup-expanded-offer-text');
+    text.textContent = spec.text;
+    div.appendChild(text);
+
+    const check = document.createElement('div');
+    check.classList.add('amp-paywall-popup-expanded-offer-check');
+    div.appendChild(check);
+    return div;
+  }
+
+  /** @private */
+  setSelected_(button) {
+    const buttons = this.getRoot().querySelectorAll(
+        '.amp-paywall-popup-expanded-offer-button');
+    for (let i = 0; i < buttons.length; i++) {
+      buttons[i].classList.toggle('selected', buttons[i] == button);
+    }
   }
 }
 
@@ -594,11 +624,13 @@ class PopupCheckout extends Popup {
   render(popup) {
     expandTemplate('PopupCheckout', popup);
     const subscribeButton =
-        popup.querySelector('.amp-paywall-popup-subscribe-google-button-text');
-    subscribeButton.textContent = 'SUBSCRIBE';
+        popup.querySelector('.amp-paywall-popup-subscribe-google-button');
+    subscribeButton.classList.add('blue-theme');
     subscribeButton.onclick = () => {
       this.close('checkout-done');
     };
+    popup.querySelector('.amp-paywall-popup-subscribe-google-button-text')
+        .textContent = 'CONFIRM';
   }
 }
 

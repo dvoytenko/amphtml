@@ -20,6 +20,22 @@
       padding: 16px;
     }
 
+    .all-nav {
+      margin-top: 16px;
+      padding: 0 8px;
+    }
+
+    .all-nav > a {
+      color: #757575;
+    }
+
+    .card {
+      background: #fff;
+      box-shadow: 0 0 4px 0 rgba(0,0,0, 0.2);
+      padding: 8px;
+      margin: 8px;
+    }
+
     .amp-paywall-popup-subscribe-google-button-icon {
       width: 18px;
       height: 18px;
@@ -49,7 +65,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #fff;
       font-size: 28px;
       font-family: gophic;
     }
@@ -110,30 +125,43 @@
     </div>
   </header>
 
-  <section class="branding">
-    <div class="amp-paywall-popup-brand-icon">VC</div>
-    <div class="amp-paywall-popup-brand-texts">
-      <div class="amp-paywall-popup-brand-motto">Vampires die in the light</div>
-      <div class="amp-paywall-popup-brand-text">
-        The leading source of news all things vampires.
-        Award winning and otherwise very awesome.
+  <div class="card">
+
+    <section class="branding">
+      <div class="amp-paywall-popup-brand-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
+            width="64px" height="64px" viewBox="0 0 100 100" enable-background="new 0 0 100 100">
+          <path fill="#000000" d="M99.945,33.019c-4.848-2.65-11.104-3.301-17.101-2.413c-11.481,1.7-20.451,8.93-26.209,20.051  c-2.054-3.019-3.296-6.817-3.329-10.955c-1.551,2.128-2.673,4.684-3.24,7.488c-0.567-2.805-1.689-5.36-3.24-7.488  c-0.033,4.21-1.315,8.074-3.436,11.118c-5.754-11.213-14.752-18.506-26.289-20.214C11.103,29.718,4.847,30.368,0,33.019  c11.051,1.697,14.079,8.617,12.227,15.589c8.736-2.634,17.313,6.145,14.513,16.375c2.322-1.115,5.657-1.422,8.708-1.018  c7.296,0.967,12.496,8.484,14.52,17.535c0.001-0.01,0.003-0.022,0.005-0.034c0.001,0.012,0.004,0.024,0.005,0.034  c2.025-9.051,7.224-16.568,14.521-17.535c3.05-0.404,6.385-0.098,8.706,1.018c-2.8-10.229,5.778-19.008,14.514-16.375  C85.866,41.636,88.895,34.716,99.945,33.019z"/>
+        </svg>
       </div>
-    </div>
-  </section>
+      <div class="amp-paywall-popup-brand-texts">
+        <div class="amp-paywall-popup-brand-motto">Vampires die in the light</div>
+        <div class="amp-paywall-popup-brand-text">
+          The leading source of news all things vampires.
+          Award winning and otherwise very awesome.
+        </div>
+      </div>
+    </section>
 
-  <section class="sub">
-    <div>
-      Subscriber since July 1st, 2017
-    </div>
-    <div>
-      $9.99/month
-    </div>
-  </section>
+    <section class="sub">
+      <div>
+        Subscriber since July 1st, 2017
+      </div>
+      <div>
+        $9.99/month
+      </div>
+    </section>
 
-  <div class="amp-paywall-popup-buttons">
-    <button class="amp-paywall-popup-other-signin-button">
-      Cancel
-    </button>
+    <div class="amp-paywall-popup-buttons">
+      <button class="amp-paywall-popup-other-signin-button">
+        Cancel
+      </button>
+    </div>
+
+  </div>
+
+  <div class="all-nav">
+    <a href="#">All subscriptions</a>
   </div>
 
 </body>

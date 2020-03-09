@@ -15,6 +15,7 @@
  */
 
 import * as st from '../../src/style';
+import {FakeStyle} from '../../testing/fake-style';
 
 describe('Style', () => {
   it('toggle', () => {
@@ -40,7 +41,7 @@ describe('Style', () => {
   });
 
   it('setStyle with vendor prefix', () => {
-    const element = {style: {WebkitTransitionDuration: ''}};
+    const element = {style: new FakeStyle({WebkitTransitionDuration: ''})};
     st.setStyle(element, 'transitionDuration', '1s', undefined, true);
     expect(element.style.WebkitTransitionDuration).to.equal('1s');
   });

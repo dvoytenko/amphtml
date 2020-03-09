@@ -16,6 +16,7 @@
 
 import {AmpDocSingle, installDocService} from '../../src/service/ampdoc-impl';
 import {FakeMutationObserver, FakeWindow} from '../../testing/fake-dom';
+import {FakeStyle} from '../../testing/fake-style';
 import {FixedLayer} from '../../src/service/fixed-layer';
 import {Services} from '../../src/services';
 import {endsWith} from '../../src/string';
@@ -230,75 +231,12 @@ describes.sandboxed('FixedLayer', {}, () => {
       toString: () => {
         return id;
       },
-      style: {
-        _top: '15px',
-        _bottom: '',
-        _position: '',
-        _opacity: '0.9',
-        _visibility: 'visible',
-        _transition: '',
-
-        get top() {
-          return this._top;
-        },
-        set top(v) {
-          elem.style.setProperty('top', v);
-        },
-        get bottom() {
-          return this._bottom;
-        },
-        set bottom(v) {
-          elem.style.setProperty('bottom', v);
-        },
-        get position() {
-          return this._position;
-        },
-        set position(v) {
-          elem.style.setProperty('position', v);
-        },
-        get opacity() {
-          return this._opacity;
-        },
-        set opacity(v) {
-          elem.style.setProperty('opacity', v);
-        },
-        get visibility() {
-          return this._visibility;
-        },
-        set visibility(v) {
-          elem.style.setProperty('visibility', v);
-        },
-        get transition() {
-          return this._transition;
-        },
-        set transition(v) {
-          elem.style.setProperty('transition', v);
-        },
-        setProperty(prop, value, priority) {
-          const privProp = '_' + prop;
-
-          // Override if important
-          if (priority === 'important') {
-            elem.style[privProp] = `${value} !${priority}`;
-          } else if (
-            elem.style[privProp] ||
-            !endsWith(elem.computedStyle[prop], '!important')
-          ) {
-            if (
-              prop === 'transition' &&
-              !value &&
-              endsWith(elem.style[privProp] || '', '!important')
-            ) {
-              // Emulate a stupid Safari bug.
-              // noop.
-            } else {
-              // If element style is already set, we can override
-              // Or, if computed style is not important priority
-              elem.style[privProp] = value;
-            }
-          }
-        },
-      },
+      style: new FakeStyle({
+        top: '15px',
+        opacity: '0.9',
+        visibility: 'visible',
+        transition: '',
+      }),
       computedStyle: {
         opacity: '0.9',
         visibility: 'visible',
@@ -307,7 +245,7 @@ describes.sandboxed('FixedLayer', {}, () => {
           if (
             elem.computedStyle.transition &&
             elem.style.transition !== '' &&
-            elem.style.transition !== 'none !important'
+            elem.style.transition !== 'none!important'
           ) {
             return this._oldTop;
           }
@@ -437,7 +375,7 @@ describes.sandboxed('FixedLayer', {}, () => {
     const rule = {
       type: 1,
       selectorText: selector,
-      style: {position},
+      style: new FakeStyle({position}),
       elements,
     };
     if (allRules[selector]) {
@@ -451,7 +389,7 @@ describes.sandboxed('FixedLayer', {}, () => {
     const rule = {
       type: 1,
       selectorText: selector,
-      style: {},
+      style: new FakeStyle({}),
       elements,
     };
     if (allRules[selector]) {
@@ -958,11 +896,11 @@ describes.sandboxed('FixedLayer', {}, () => {
 
         expect(state['F0'].fixed).to.be.true;
         expect(state['F0'].top).to.equal('0px');
-        expect(element1.style.transition).to.equal('none !important');
+        expect(element1.style.transition).to.equal('none!important');
 
         expect(state['F4'].sticky).to.be.true;
         expect(state['F4'].top).to.equal('0px');
-        expect(element5.style.transition).to.equal('none !important');
+        expect(element5.style.transition).to.equal('none!important');
 
         vsyncTasks[0].mutate({});
         expect(element1.style.transition).to.equal('');

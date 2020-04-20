@@ -27,6 +27,22 @@ const TAG = 'amp-intersection-observer-polyfill';
 function install(win) {
   upgradePolyfill(win, () => {
     installIntersectionObserver();
+
+    // Cross-origin iframe polyfill.
+    const iframeClient = iframeMessagingClientFor(win);
+    if (iframeClient && win.IntersectionObserver._setupCrossOriginUpdater) {
+      const updater = win.IntersectionObserver._setupCrossOriginUpdater();
+      iframeClient.makeRequest(
+        MessageType.SEND_POSITIONS,
+        MessageType.POSITION,
+        (data) => {
+          // DO NOT SUBMIT: adjust formula for intersections in accordance
+          // with the polyfill's API.
+          updater(data['viewportRect'], data['targetRect']);
+        }
+      );
+    }
+
     // TODO(dvoytenko): hookup 3p host updater for inabox.
   });
   return {};

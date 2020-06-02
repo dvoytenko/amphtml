@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import {rethrowAsync} from '../log';
+
 /**
  * Creates a scheduling function that executes the callback based on the
  * scheduler, but only one task at a time.
@@ -39,4 +41,12 @@ export function throttleTail(handler, defaultScheduler = null) {
     }
   };
   return scheduleIfNotScheduled;
+}
+
+export function protectedNoInline(callback) {
+  try {
+    return callback();
+  } catch (e) {
+    rethrowAsync(e);
+  }
 }

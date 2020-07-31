@@ -43,19 +43,21 @@ export function BentoComponent({
     }
     setTimeout(() => {
       console.log('load done');
-      onLoad();
+      if (onLoad) {
+        onLoad();
+      }
     }, 1000);
   }, [load, onLoad]);
 
   return (
     <WithAmpContext debug={id} renderable={renderable} playable={playable}>
-      <div {...rest} style={{border: '1px solid green'}}>
+      <div {...rest} style={{border: '1px solid green', padding: 8}}>
         <div>{id}</div>
         <div>
           Render count: {counterRef.current}
         </div>
         <div>
-          Load: {String(load)}
+          Load: <b>{String(load)}</b>
         </div>
 
         <div>

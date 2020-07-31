@@ -37,6 +37,7 @@ export function getAmpContext() {
     (context = createContext({
       'renderable': true,
       'playable': true,
+      'loading': 'auto',
     }))
   );
 }
@@ -58,4 +59,12 @@ export function WithAmpContext(props) {
   };
 
   return <AmpContext.Provider children={props['children']} value={current} />;
+}
+
+/**
+ * @return {!AmpContext}
+ */
+export function useAmpContext() {
+  const AmpContext = getAmpContext();
+  return useContext(AmpContext);
 }

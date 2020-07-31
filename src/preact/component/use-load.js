@@ -14,11 +14,43 @@
  * limitations under the License.
  */
 
+import {useAmpContext} from '../context';
+
+// QQQ: find the right home.
+// QQQ: combine with `element.loading`? "auto" might mean different things:
+// - LoadRule=auto - eager.
+// - loading=auto - lazy.
+/** @enum {string} */
+const LoadRule = {
+  AUTO: 'auto',
+  LAZY: 'lazy',
+  UNLOAD: 'unload',
+};
+
 
 /**
  * @param {!Object} props
  * @return {{load: boolean, onLoad: function(), onLoadError: function(?)}}
  */
 export function useLoad(props) {
-  return {load: true, onLoad: () => {}, onLoadError: () => {}};
+  const {
+    'loading': loadingProp,
+    'onLoad': onLoad,
+    'onLoadError': onLoadError,
+  } = props;
+
+  const {
+    'loading': loadingContext,
+    'renderable': renderable,
+  } = useAmpContext();
+
+  const loading =
+    (loadingProp && loadingProp !== 'auto' ? loadingProp : loadingContext) ||
+    'auto';
+
+  const load =
+    loading == 'eager' ||
+    loading == 'auto' && renderable;
+
+  return {load, onLoad, onLoadError};
 }

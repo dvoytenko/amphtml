@@ -82,6 +82,7 @@ export class PreactBaseElement extends AMP.BaseElement {
     this.context_ = {
       renderable: false,
       playable: false,
+      loading: 'lazy',
       notify: () => this.mutateElement(() => {}),
     };
 
@@ -139,6 +140,10 @@ export class PreactBaseElement extends AMP.BaseElement {
 
   /** @override */
   layoutCallback() {
+    console.log('PreactBaseElement: layoutCallback started');
+    // this.loadCallback();
+
+    // QQQQ: which of these are still useful?
     const deferred =
       this.scheduledRenderDeferred_ ||
       (this.scheduledRenderDeferred_ = new Deferred());
@@ -149,6 +154,20 @@ export class PreactBaseElement extends AMP.BaseElement {
       this.observer_.observe(this.element, PASSTHROUGH_NON_EMPTY_MUTATION_INIT);
     }
     return deferred.promise;
+  }
+
+  /** @override */
+  loadCallback() {
+    console.log('PreactBaseElement: loadCallback started');
+    const deferred = new Deferred();
+    this.mutateProps({
+      'loading': 'eager',
+      'onLoad': deferred.resolve,
+      'onLoadError': deferred.reject,
+    });
+    return deferred.promise.then(() => {
+      console.log('PreactBaseElement: loadCallback complete');
+    });
   }
 
   /** @override */

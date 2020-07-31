@@ -23,6 +23,7 @@ import {hasOwn} from '../utils/object';
 import {installShadowStyle} from '../shadow-embed';
 import {matches} from '../dom';
 import {render} from './index';
+import {contextProp, setParent, setProp, subscribe} from '../context';
 
 /**
  * @typedef {{
@@ -59,6 +60,33 @@ const SIZE_DEFINED_STYLE = {
   'height': '100%',
 };
 
+// QQQ: move all loader stuff.
+
+/** @type {!ContextProp<Loader>} */
+const LoaderProp = contextProp('Loader', {needsParent: true});
+
+class Loader {
+
+  scheduleLoad(element) {
+    console.log(performance.now(), 'Loader: scheduleLoad: ', element.element.id);
+
+    setTimeout(() => {
+      console.log(performance.now(), 'Loader: load: ', element.element.id);
+      element.loadCallback();
+    }, 1000);
+
+    return this.unscheduleLoad.bind(this, element);
+  }
+
+  unscheduleLoad(element) {
+    console.log(performance.now(), 'Loader: unscheduleLoad: ', element.element.id);
+  }
+
+}
+
+// QQQ: remove
+let loader = null;
+
 /**
  * Wraps a Preact Component in a BaseElement class.
  *
@@ -82,6 +110,7 @@ export class PreactBaseElement extends AMP.BaseElement {
     this.context_ = {
       renderable: false,
       playable: false,
+      // QQQQ: these values should all come from somewhere.
       loading: 'lazy',
       notify: () => this.mutateElement(() => {}),
     };
@@ -106,6 +135,12 @@ export class PreactBaseElement extends AMP.BaseElement {
           this.scheduleRender_();
         })
       : null;
+
+    // QQQ: move
+    if (!loader) {
+      loader = new Loader();
+      setProp(this.getAmpDoc().getRootNode(), LoaderProp, this.getAmpDoc(), loader);
+    }
   }
 
   /**
@@ -136,11 +171,21 @@ export class PreactBaseElement extends AMP.BaseElement {
       e.stopPropagation();
       this.unmount_();
     });
+
+    // QQQQ
+    console.log(performance.now(), 'PreactBaseElement: subscribe to loader:', this.element.id);
+    subscribe(
+      this.element,
+      [LoaderProp],
+      (loader) => {
+        return loader.scheduleLoad(this);
+      }
+    );
   }
 
   /** @override */
   layoutCallback() {
-    console.log('PreactBaseElement: layoutCallback started');
+    console.log(performance.now(), 'PreactBaseElement: layoutCallback started:', this.element.id);
     // this.loadCallback();
 
     // QQQQ: which of these are still useful?
@@ -158,7 +203,7 @@ export class PreactBaseElement extends AMP.BaseElement {
 
   /** @override */
   loadCallback() {
-    console.log('PreactBaseElement: loadCallback started');
+    console.log(performance.now(), 'PreactBaseElement: loadCallback started:', this.element.id);
     const deferred = new Deferred();
     this.mutateProps({
       'loading': 'eager',
@@ -166,7 +211,7 @@ export class PreactBaseElement extends AMP.BaseElement {
       'onLoadError': deferred.reject,
     });
     return deferred.promise.then(() => {
-      console.log('PreactBaseElement: loadCallback complete');
+      console.log(performance.now(), 'PreactBaseElement: loadCallback complete:', this.element.id);
     });
   }
 
@@ -238,6 +283,7 @@ export class PreactBaseElement extends AMP.BaseElement {
         );
         const shadowRoot = this.element.attachShadow({mode: 'open'});
         this.container_ = shadowRoot;
+        setParent(shadowRoot, this.element);
 
         const shadowCss = Ctor['shadowCss'];
         if (shadowCss) {

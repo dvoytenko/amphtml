@@ -23,7 +23,16 @@ import {hasOwn} from '../utils/object';
 import {installShadowStyle} from '../shadow-embed';
 import {matches} from '../dom';
 import {render} from './index';
-import {contextProp, setParent, setProp, subscribe} from '../context';
+import {
+  contextProp,
+  setComponent,
+  useMemo,
+  useDisposableMemo,
+  setParent,
+  setProp,
+  subscribe,
+  withMetaData,
+} from '../context';
 
 /**
  * @typedef {{
@@ -62,8 +71,47 @@ const SIZE_DEFINED_STYLE = {
 
 // QQQ: move all loader stuff.
 
+/** @type {!ContextProp<string>} */
+const Loading = contextProp(
+  'loading',
+  {
+    needsParent: true,
+    defaultValue: 'auto',
+    compute: (contextNode, inputs, parentValue) => {
+      if (parentValue === 'unload') {
+        return 'unload';
+      }
+      return inputs[0];
+    },
+  }
+);
+
+const LoadingComponent = (node) => {
+  const handler = () => {
+    const isVisible = document.visibilityState == 'visible';
+    console.log('LoadingComponent: isVisible = ', isVisible);
+    setProp(node, Loading, LoadingComponent, isVisible ? 'lazy' : 'unload');
+  };
+  document.addEventListener('visibilitychange', handler);
+  handler();
+  return () => {
+    document.removeEventListener('visibilitychange', handler);
+  };
+};
+
 /** @type {!ContextProp<Loader>} */
 const LoaderProp = contextProp('Loader', {needsParent: true});
+
+const LoaderComponent = withMetaData(
+  (node) => {
+    const loader = useDisposableMemo(() => {
+      console.log('LoaderComponent: init loader');
+      const loader = new Loader();
+      setProp(node, LoaderProp, LoaderComponent, loader);
+      return {value: loader};
+    });
+  }
+);
 
 class Loader {
 
@@ -83,9 +131,6 @@ class Loader {
   }
 
 }
-
-// QQQ: remove
-let loader = null;
 
 /**
  * Wraps a Preact Component in a BaseElement class.
@@ -137,10 +182,9 @@ export class PreactBaseElement extends AMP.BaseElement {
       : null;
 
     // QQQ: move
-    if (!loader) {
-      loader = new Loader();
-      setProp(this.getAmpDoc().getRootNode(), LoaderProp, this.getAmpDoc(), loader);
-    }
+    const rootNode = this.getAmpDoc().getRootNode();
+    setComponent(rootNode, LoadingComponent);
+    setComponent(rootNode, LoaderComponent);
   }
 
   /**
@@ -176,9 +220,15 @@ export class PreactBaseElement extends AMP.BaseElement {
     console.log(performance.now(), 'PreactBaseElement: subscribe to loader:', this.element.id);
     subscribe(
       this.element,
-      [LoaderProp],
-      (loader) => {
-        return loader.scheduleLoad(this);
+      [LoaderProp, Loading],
+      (loader, loading) => {
+        console.log('PreactBaseElement: subscriber: ', loader, loading);
+        if (loading == 'unload') {
+          console.log('PreactBaseElement: unload', this.element.id);
+          this.mutateProps({'loading': 'unload'});
+        } else {
+          return loader.scheduleLoad(this);
+        }
       }
     );
   }

@@ -1,0 +1,106 @@
+<!doctype html>
+<html ⚡>
+<head>
+  <meta charset="utf-8">
+  <title>Basic Carousel</title>
+  <link rel="canonical" href="amps.html" >
+  <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+  <link href='https://fonts.googleapis.com/css?family=Questrial' rel='stylesheet' type='text/css'>
+  <script>
+    (self.AMP = self.AMP || []).push(function (AMP) {
+      AMP.toggleExperiment('amp-accordion-bento', true, true);
+    });
+  </script>
+  <script async custom-element="amp-accordion" src="https://cdn.ampproject.org/v0/amp-accordion-1.0.js"></script>
+  <script async custom-element="amp-video" src="https://cdn.ampproject.org/v0/amp-video-0.1.js"></script>
+  <script async custom-element="amp-youtube" src="https://cdn.ampproject.org/v0/amp-youtube-1.0.js"></script>
+  <script async custom-element="amp-animation" src="https://cdn.ampproject.org/v0/amp-animation-0.1.js"></script>
+
+  <style amp-custom>
+    .box {
+      background: yellow; width: 20px; height: 20px;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+  </style>
+
+  <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+  <script async src="https://cdn.ampproject.org/v0.js"></script>
+</head>
+<body>
+  <h1>A Basic accordion</h1>
+  <amp-accordion id="accordion-1" expand-single-section>
+    <section expanded>
+      <h3>amp-video</h3>
+      <amp-video
+          src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"
+          width="720"
+          height="405"
+          layout="responsive"
+          controls>
+      </amp-video>
+    </section>
+
+    <section>
+      <h3>amp-youtube</h3>
+      <amp-youtube
+          data-videoid="lBTCB7yLs8Y"
+          width="358"
+          height="204"
+          layout="responsive">
+      </amp-youtube>
+    </section>
+
+    <section>
+      <h3>amp-animation</h3>
+      <amp-layout
+          width="720"
+          height="405"
+          layout="responsive"
+          >
+        <amp-animation id="anim1" layout="nodisplay" trigger="visibility">
+        <script type="application/json">
+          {
+            "duration": "1s",
+            "iterations": "400",
+            "fill": "both",
+            "direction": "alternate",
+            "animations": [
+              {
+                "selector": "#box1",
+                "easing": "cubic-bezier(0,0,.21,1)",
+                "keyframes": {
+                  "transform": "translateX(200px)"
+                }
+              }
+            ]
+          }
+        </script>
+        </amp-animation>
+
+        <div id="box1" class="box"></div>
+      </amp-layout>
+    </section>
+
+  </amp-accordion>
+
+  <div>
+    <button onclick="addSection()">Add a section</button>
+  </div>
+
+  <script>
+    function addSection() {
+      var section = document.createElement('section');
+      section.setAttribute('expanded', '');
+      var header = document.createElement('h3');
+      header.textContent = 'New section';
+      var content = document.createElement('div');
+      content.textContent = 'content of the new section';
+      section.appendChild(header);
+      section.appendChild(content);
+      document.getElementById('accordion-1').appendChild(section);
+    }
+  </script>
+</body>
+</html>

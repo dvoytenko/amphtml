@@ -1,0 +1,101 @@
+<!doctype html>
+<html ⚡>
+<head>
+  <meta charset="utf-8">
+  <title>Basic Carousel</title>
+  <link rel="canonical" href="amps.html" >
+  <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+  <link href='https://fonts.googleapis.com/css?family=Questrial' rel='stylesheet' type='text/css'>
+  <script>
+    (self.AMP = self.AMP || []).push(function (AMP) {
+      AMP.toggleExperiment('amp-inline-gallery-bento', true, true);
+      AMP.toggleExperiment('amp-base-carousel-bento', true, true);
+    });
+  </script>
+  <script async custom-element="amp-base-carousel" src="https://cdn.ampproject.org/v0/amp-base-carousel-1.0.js"></script>
+  <script async custom-element="amp-lightbox-gallery" src="https://cdn.ampproject.org/v0/amp-lightbox-gallery-1.0.js"></script>
+  <script async custom-element="amp-video" src="https://cdn.ampproject.org/v0/amp-video-0.1.js"></script>
+  <script async custom-element="amp-youtube" src="https://cdn.ampproject.org/v0/amp-youtube-1.0.js"></script>
+  <script async custom-element="amp-animation" src="https://cdn.ampproject.org/v0/amp-animation-0.1.js"></script>
+
+  <style amp-custom>
+    .box {
+      background: yellow; width: 20px; height: 20px;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+  </style>
+
+  <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+  <script async src="https://cdn.ampproject.org/v0.js"></script>
+</head>
+<body>
+  <h1>A Basic carousel, with looping</h1>
+  <amp-base-carousel id="carousel-1" width="300" height="200" layout="responsive"
+      _loop="true" lightbox>
+
+    <amp-video
+        src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"
+        width="720"
+        height="405"
+        layout="responsive"
+        controls>
+    </amp-video>
+
+    <amp-youtube
+        id="myVideo"
+        data-videoid="lBTCB7yLs8Y"
+        width="358"
+        height="204"
+        layout="responsive">
+    </amp-youtube>
+
+    <amp-layout
+        width="720"
+        height="405"
+        layout="responsive"
+        >
+      <amp-animation id="anim1" layout="nodisplay" trigger="visibility">
+      <script type="application/json">
+        {
+          "duration": "1s",
+          "iterations": "400",
+          "fill": "both",
+          "direction": "alternate",
+          "animations": [
+            {
+              "selector": "#box1",
+              "easing": "cubic-bezier(0,0,.21,1)",
+              "keyframes": {
+                "transform": "translateX(200px)"
+              }
+            }
+          ]
+        }
+      </script>
+      </amp-animation>
+
+      <div id="box1" class="box"></div>
+    </amp-layout>
+
+  </amp-base-carousel>
+
+  <button on="tap:carousel-1.prev()">Prev</button>
+  <button on="tap:carousel-1.next()">Next</button>
+  <button on="tap:carousel-1.goToSlide(index = 0)">Slide 1 (0 indexed)</button>
+
+  <div>
+    <button onclick="addFirstSlide()">Add a first slide</button>
+  </div>
+
+  <script>
+    function addFirstSlide() {
+      var slide = document.createElement('div');
+      slide.textContent = 'A new slide';
+      var carousel = document.getElementById('carousel-1');
+      carousel.prepend(slide);
+    }
+  </script>
+</body>
+</html>

@@ -49,8 +49,7 @@ export const Default = () => {
       datetime={datetime}
       display-in={displayIn}
       locale={locale}
-      layout="responsive"
-      width="100"
+      layout="fixed-height"
       height="100"
     >
       <template type="amp-mustache">

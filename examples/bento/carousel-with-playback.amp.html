@@ -36,6 +36,7 @@
       _loop="true" lightbox>
 
     <amp-video
+        class="slide"
         src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"
         width="720"
         height="405"
@@ -44,7 +45,7 @@
     </amp-video>
 
     <amp-youtube
-        id="myVideo"
+        class="slide"
         data-videoid="lBTCB7yLs8Y"
         width="358"
         height="204"
@@ -52,6 +53,7 @@
     </amp-youtube>
 
     <amp-layout
+        class="slide"
         width="720"
         height="405"
         layout="responsive"
@@ -87,6 +89,7 @@
 
   <div>
     <button onclick="addFirstSlide()">Add a first slide</button>
+    <button onclick="deleteFirstSlide()">Delete the first slide</button>
   </div>
 
   <script>
@@ -95,6 +98,14 @@
       slide.textContent = 'A new slide';
       var carousel = document.getElementById('carousel-1');
       carousel.prepend(slide);
+    }
+
+    function deleteFirstSlide() {
+      var carousel = document.getElementById('carousel-1');
+      var slide = carousel.querySelector('.slide');
+      if (slide) {
+        carousel.removeChild(slide);
+      }
     }
   </script>
 </body>

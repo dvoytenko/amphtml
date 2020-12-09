@@ -1,0 +1,48 @@
+<!doctype html>
+<html ⚡>
+<head>
+  <meta charset="utf-8">
+  <title>Basic Carousel</title>
+  <link rel="canonical" href="amps.html" >
+  <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+  <link href='https://fonts.googleapis.com/css?family=Questrial' rel='stylesheet' type='text/css'>
+  <script>
+    (self.AMP = self.AMP || []).push(function (AMP) {
+      AMP.toggleExperiment('amp-social-share-bento', true, true);
+    });
+  </script>
+  <script async custom-element="amp-social-share" src="https://cdn.ampproject.org/v0/amp-social-share-1.0.js"></script>
+
+  <style amp-custom>
+  </style>
+
+  <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+  <script async src="https://cdn.ampproject.org/v0.js"></script>
+</head>
+<body>
+  <section>
+    <h1>amp-social-share</h1>
+
+    <amp-social-share id="socialshare1" type="twitter"
+        data-param-url="https://www.google.com">
+    </amp-social-share>
+
+    <div>
+      <button onclick="setUrl()">Set URL</button>
+      <button onclick="setContent()">Set content</button>
+    </div>
+
+    <script>
+      function setUrl() {
+        socialshare1.setAttribute('data-param-url', 'https://example.org');
+      }
+      function setContent() {
+        socialshare1.textContent = 'T';
+      }
+    </script>
+  </section>
+
+
+  <div style="height: 300vh">scroll</div>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!doctype html>
+<html ⚡>
+<head>
+  <meta charset="utf-8">
+  <title>Basic Carousel</title>
+  <link rel="canonical" href="amps.html" >
+  <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+  <link href='https://fonts.googleapis.com/css?family=Questrial' rel='stylesheet' type='text/css'>
+  <script>
+    (self.AMP = self.AMP || []).push(function (AMP) {
+      AMP.toggleExperiment('amp-timeago', true, true);
+      AMP.toggleExperiment('amp-date-display', true, true);
+      AMP.toggleExperiment('amp-date-countdown', true, true);
+    });
+  </script>
+  <script async custom-element="amp-timeago" src="https://cdn.ampproject.org/v0/amp-timeago-1.0.js"></script>
+  <script async custom-element="amp-date-display" src="https://cdn.ampproject.org/v0/amp-date-display-1.0.js"></script>
+  <script async custom-element="amp-date-countdown" src="https://cdn.ampproject.org/v0/amp-date-countdown-1.0.js"></script>
+  <script async custom-template="amp-mustache" src="https://cdn.ampproject.org/v0/amp-mustache-0.2.js"></script>
+
+  <style amp-custom>
+  </style>
+
+  <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+  <script async src="https://cdn.ampproject.org/v0.js"></script>
+</head>
+<body>
+  <section>
+    <h1>amp-timeago</h1>
+
+    <amp-timeago id="timeago1" width="100" height="40" datetime="2020-12-08T14:06:31.585Z">
+      Time passed.
+    </amp-timeago>
+
+    <div>
+      <button onclick="setToNow()">Set to now</button>
+    </div>
+
+    <script>
+      function setToNow() {
+        document.getElementById('timeago1')
+          .setAttribute('datetime', new Date().toISOString());
+      }
+    </script>
+  </section>
+
+  <section>
+    <h1>amp-date-display</h1>
+
+    <amp-date-display id="datedisplay1" layout="fixed-height" height="40" datetime="2020-12-08T14:06:31.585Z">
+      <template type="amp-mustache">
+        <div>
+          {`UTC in local: {{dayName}} {{day}} {{monthName}} {{year}},
+            {{hourTwoDigit}}:{{minuteTwoDigit}}:{{secondTwoDigit}}`}
+        </div>
+      </template>
+    </amp-date-display>
+
+    <div>
+      <button onclick="setToNow()">Set to now</button>
+    </div>
+
+    <script>
+      function setToNow() {
+        document.getElementById('datedisplay1')
+          .setAttribute('datetime', new Date().toISOString());
+      }
+    </script>
+  </section>
+
+  <section>
+    <h1>amp-date-countdown</h1>
+
+    <amp-date-countdown id="datecountdown1" layout="fixed-height" height="40" end-date="2020-12-08T14:06:31.585Z">
+      <template type="amp-mustache">
+        <span>{'{{days}} {{d}}'}</span>
+        <span>{'{{hours}} {{h}}'}</span>
+        <span>{'{{minutes}} {{m}}'}</span>
+        <span>{'{{seconds}} {{s}}'}</span>
+      </template>
+    </amp-date-countdown>
+
+    <div>
+      <button onclick="setToNow()">Set to now</button>
+    </div>
+
+    <script>
+      function setToNow() {
+        document.getElementById('datecountdown1')
+          .setAttribute('end-date', new Date().toISOString());
+      }
+    </script>
+  </section>
+
+  <div style="height: 300vh">scroll</div>
+</body>
+</html>

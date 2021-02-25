@@ -98,7 +98,8 @@ const TEMPLATES_MUTATION_INIT = {
 
 /** @const {!JsonObject<string, string>} */
 const SHADOW_CONTAINER_ATTRS = dict({
-  'style': 'display: contents; background: inherit;',
+  // QQQQ: IE is failing!?
+  'style': 'display: block; background: inherit; position: absolute; top: 0; left: 0; right: 0; bottom: 0',
   'part': 'c',
 });
 

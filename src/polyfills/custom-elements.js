@@ -863,6 +863,15 @@ function subClass(superClass, subClass) {
     },
   });
   setPrototypeOf(subClass, superClass);
+
+  // Copy old descriptors on the polyfill prototype to ensure that other
+  // polyfills can locate them.
+  const descriptors = Object.getOwnPropertyDescriptors(superClass.prototype);
+  for (const k in descriptors) {
+    if (!Object.getOwnPropertyDescriptor(subClass.prototype, k)) {
+      Object.defineProperty(subClass.prototype, k, descriptors[k]);
+    }
+  }
 }
 
 /**

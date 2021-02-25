@@ -866,6 +866,9 @@ function subClass(superClass, subClass) {
   });
   setPrototypeOf(subClass, superClass);
 
+  subClass['ORIG'] = superClass;
+
+  /* QQQQ
   // Copy old descriptors on the polyfill prototype to ensure that other
   // polyfills can locate them.
   const superNames = Object.getOwnPropertyNames(superProto);
@@ -878,6 +881,7 @@ function subClass(superClass, subClass) {
     }
   }
   Object.defineProperties(subProto, copyDescriptors);
+  */
 }
 
 /**

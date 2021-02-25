@@ -72,7 +72,8 @@ export function calculateExtensionScriptUrl(
   const extensionVersion = opt_extensionVersion
     ? '-' + opt_extensionVersion
     : '';
-  return `${base}/rtv/${rtv}/v0/${extensionId}${extensionVersion}${fileExtension}`;
+  // return `${base}/rtv/${rtv}/v0/${extensionId}${extensionVersion}${fileExtension}`;
+  return `/dist2/v0/${extensionId}${extensionVersion}${fileExtension}`;
 }
 
 /**

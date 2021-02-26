@@ -640,6 +640,10 @@ export class PreactBaseElement extends AMP.BaseElement {
         console.log('QQQQ: rendering done');
       } catch (e) {
         console.log('QQQQ: rendering failed:', e);
+        console.log(e);
+        console.log(e.location);
+        console.log(e.stack);
+        window.QQQQ_LAST_ERROR = e;
       }
     }
 

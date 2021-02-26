@@ -852,11 +852,9 @@ function wrapHTMLElement(win) {
  * @template SUB
  */
 function subClass(superClass, subClass) {
-  const superProto = superClass.prototype;
-
   // Object.getOwnPropertyDescriptor(superClass.prototype, 'constructor')
   // {value: ƒ, writable: true, enumerable: false, configurable: true}
-  const subProto = subClass.prototype = Object.create(superProto, {
+  subClass.prototype = Object.create(superClass.prototype, {
     constructor: {
       // enumerable: false,
       configurable: true,
@@ -865,23 +863,6 @@ function subClass(superClass, subClass) {
     },
   });
   setPrototypeOf(subClass, superClass);
-
-  subClass['ORIG'] = superClass;
-
-  /* QQQQ
-  // Copy old descriptors on the polyfill prototype to ensure that other
-  // polyfills can locate them.
-  const superNames = Object.getOwnPropertyNames(superProto);
-  const subNames = Object.getOwnPropertyNames(subProto);
-  const copyDescriptors = {};
-  for (let i = 0; i < superNames.length; i++) {
-    const name = superNames[i];
-    if (!subNames.includes(name)) {
-      copyDescriptors[name] = Object.getOwnPropertyDescriptor(superProto, name);
-    }
-  }
-  Object.defineProperties(subProto, copyDescriptors);
-  */
 }
 
 /**

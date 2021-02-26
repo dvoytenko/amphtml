@@ -99,7 +99,8 @@ const TEMPLATES_MUTATION_INIT = {
 /** @const {!JsonObject<string, string>} */
 const SHADOW_CONTAINER_ATTRS = dict({
   // QQQQ: IE is failing!?
-  'style': 'display: block; background: inherit; position: absolute; top: 0; left: 0; right: 0; bottom: 0',
+  // 'style': 'display: block; background: inherit; position: absolute; top: 0; left: 0; right: 0; bottom: 0',
+  'style': 'display: contents; background: inherit;',
   'part': 'c',
 });
 
@@ -634,15 +635,11 @@ export class PreactBaseElement extends AMP.BaseElement {
       if (replacement) {
         replacement[RENDERED_PROP] = true;
       }
-      console.log('QQQQ: rendering');
       try {
         render(v, this.container_, replacement);
-        console.log('QQQQ: rendering done');
       } catch (e) {
         console.log('QQQQ: rendering failed:', e);
         console.log(e);
-        console.log(e.location);
-        console.log(e.stack);
         window.QQQQ_LAST_ERROR = e;
       }
     }
@@ -655,7 +652,6 @@ export class PreactBaseElement extends AMP.BaseElement {
     }
 
     if (this.renderDeferred_) {
-      console.log('QQQQ: resolve deferred buildCallback');
       this.renderDeferred_.resolve();
       this.renderDeferred_ = null;
     }

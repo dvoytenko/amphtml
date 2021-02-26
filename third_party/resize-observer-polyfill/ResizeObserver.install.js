@@ -987,13 +987,27 @@ export function installResizeObserver(global) {
             console.log('QQQ: resizeobserver connect: 8.2.2.5');
             if (mutationObserverSupported) {
                 this.mutationsObserver_ = new MutationObserver(this.refresh);
-                console.log('QQQ: resizeobserver connect: 8.2.2.6');
-                this.mutationsObserver_.observe(rootNode, {
-                    attributes: true,
-                    childList: true,
-                    characterData: true,
-                    subtree: true
-                });
+                console.log('QQQ: resizeobserver connect: 8.2.2.6');//QQQQ: here!!!
+                try {
+                    this.mutationsObserver_.observe(rootNode, {
+                        attributes: true,
+                        childList: true,
+                        characterData: true,
+                        subtree: true
+                    });
+                } catch (e) {
+                    console.log('QQQ: failed to mo.observe for rootNode:', e);
+                    if (rootNode.host) {
+                        console.log('QQQ: fallback to host');
+                        this.mutationsObserver_.observe(rootNode.host, {
+                            attributes: true,
+                            childList: true,
+                            characterData: true,
+                            subtree: true
+                        });
+                        console.log('QQQ: fallback to host done');
+                    }
+                }
                 console.log('QQQ: resizeobserver connect: 8.2.2.7');
             }
             else {

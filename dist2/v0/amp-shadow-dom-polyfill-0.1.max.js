@@ -261,6 +261,6 @@ getComputedStyleValue:function(a,b){return Z.getComputedStyleValue(a,b)},nativeC
 
 //# sourceMappingURL=webcomponents-sd.js.map
 })();;
-(function(){'use strict';})();
-
-//# sourceMappingURL=amp-shadow-dom-polyfill-0.1.js.map
+(() => {
+})();
+//# sourceMappingURL=amp-shadow-dom-polyfill-0.1.max.js.map

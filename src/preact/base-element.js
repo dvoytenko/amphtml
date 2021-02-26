@@ -634,7 +634,13 @@ export class PreactBaseElement extends AMP.BaseElement {
       if (replacement) {
         replacement[RENDERED_PROP] = true;
       }
-      render(v, this.container_, replacement);
+      console.log('QQQQ: rendering');
+      try {
+        render(v, this.container_, replacement);
+        console.log('QQQQ: rendering done');
+      } catch (e) {
+        console.log('QQQQ: rendering failed:', e);
+      }
     }
 
     // Dispatch the DOM_UPDATE event when rendered in the light DOM.
@@ -645,6 +651,7 @@ export class PreactBaseElement extends AMP.BaseElement {
     }
 
     if (this.renderDeferred_) {
+      console.log('QQQQ: resolve deferred buildCallback');
       this.renderDeferred_.resolve();
       this.renderDeferred_ = null;
     }

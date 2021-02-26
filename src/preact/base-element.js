@@ -523,20 +523,17 @@ export class PreactBaseElement extends AMP.BaseElement {
           this.hydrationPending_ = true;
         } else {
           // Create new shadow root.
-          // shadowRoot = this.element.attachShadow({
-          //   mode: 'open',
-          //   delegatesFocus: Ctor['delegatesFocus'],
-          // });
-          shadowRoot = document.createElement('sd');
-          this.element.appendChild(shadowRoot);
+          shadowRoot = this.element.attachShadow({
+            mode: 'open',
+            delegatesFocus: Ctor['delegatesFocus'],
+          });
 
           // The pre-constructed shadow root is required to have the stylesheet
           // inline. Thus, only the new shadow roots share the stylesheets.
           const shadowCss = Ctor['shadowCss'];
-          // QQQQQ
-          // if (shadowCss) {
-          //   installShadowStyle(shadowRoot, this.element.tagName, shadowCss);
-          // }
+          if (shadowCss) {
+            installShadowStyle(shadowRoot, this.element.tagName, shadowCss);
+          }
 
           // Create container.
           // The pre-constructed shadow root is required to have this container.

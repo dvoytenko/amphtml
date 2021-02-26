@@ -190,20 +190,28 @@ function ScrollerWithRef(
 
   // Adjust slide position when container size changes.
   useLayoutEffect(() => {
+    console.log('QQQ: scroller useLayoutEffect: 1');
     if (!containerRef.current) {
       return;
     }
+    console.log('QQQ: scroller useLayoutEffect: 2');
     const node = containerRef.current;
+    console.log('QQQ: scroller useLayoutEffect: 3');
     if (!node) {
       return;
     }
     // Use local window.
+    console.log('QQQ: scroller useLayoutEffect: 4');
     const win = toWin(node.ownerDocument.defaultView);
+    console.log('QQQ: scroller useLayoutEffect: 5');
     if (!win) {
       return undefined;
     }
+    console.log('QQQ: scroller useLayoutEffect: 6');
     const observer = new win.ResizeObserver(scrollToActiveSlide);
+    console.log('QQQ: scroller useLayoutEffect: 7');
     observer.observe(node);
+    console.log('QQQ: scroller useLayoutEffect: 8');
     return () => observer.disconnect();
   }, [scrollToActiveSlide]);
 

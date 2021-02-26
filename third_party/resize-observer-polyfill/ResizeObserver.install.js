@@ -531,35 +531,52 @@ export function installResizeObserver(global) {
          * @returns {void}
          */
         ResizeObserverSPI.prototype.observe = function (target) {
+            console.log('QQQ: resizeobserver observe: 1');
             if (!arguments.length) {
                 throw new TypeError('1 argument required, but only 0 present.');
             }
             // Do nothing if current environment doesn't have the Element interface.
+            console.log('QQQ: resizeobserver observe: 2');
             if (typeof Element === 'undefined' || !(Element instanceof Object)) {
                 return;
             }
+            console.log('QQQ: resizeobserver observe: 3');
             if (!(target instanceof getWindowOf(target).Element)) {
                 throw new TypeError('parameter 1 is not of type "Element".');
             }
+            console.log('QQQ: resizeobserver observe: 4');
             var observations = this.observations_;
             // Do nothing if element is already being observed.
             if (observations.has(target)) {
                 return;
             }
+            console.log('QQQ: resizeobserver observe: 5');
             var rootNode = getControlledRootNode(target, target.ownerDocument);
+            console.log('QQQ: resizeobserver observe: 6');
             observations.set(target, new ResizeObservation(target, rootNode));
+            console.log('QQQ: resizeobserver observe: 7');
             var rootNodeTargets = this.rootNodes_.get(rootNode);
+            console.log('QQQ: resizeobserver observe: 8');
             if (!rootNodeTargets) {
                 rootNodeTargets = [];
+                console.log('QQQ: resizeobserver observe: 8.1');
                 this.rootNodes_.set(rootNode, rootNodeTargets);
+                console.log('QQQ: resizeobserver observe: 8.2');
                 this.controller_.addObserver(rootNode, this);
+                console.log('QQQ: resizeobserver observe: 8.3');
             }
+            console.log('QQQ: resizeobserver observe: 9');
             rootNodeTargets.push(target);
+            console.log('QQQ: resizeobserver observe: 10');
             if (this.intersectionObserver_) {
+                console.log('QQQ: resizeobserver observe: 10.1');
                 this.intersectionObserver_.observe(target);
+                console.log('QQQ: resizeobserver observe: 10.2');
             }
             // Force the update of observations.
+            console.log('QQQ: resizeobserver observe: 11');
             this.controller_.refresh(rootNode);
+            console.log('QQQ: resizeobserver observe: 12');
         };
         /**
          * Stops observing provided element.

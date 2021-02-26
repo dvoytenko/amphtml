@@ -532,51 +532,35 @@
          * @returns {void}
          */
         ResizeObserverSPI.prototype.observe = function (target) {
-            console.log('QQQ: resizeobserver observe: 1');
             if (!arguments.length) {
                 throw new TypeError('1 argument required, but only 0 present.');
             }
-            console.log('QQQ: resizeobserver observe: 2');
             // Do nothing if current environment doesn't have the Element interface.
             if (typeof Element === 'undefined' || !(Element instanceof Object)) {
                 return;
             }
-            console.log('QQQ: resizeobserver observe: 3');
             if (!(target instanceof getWindowOf(target).Element)) {
                 throw new TypeError('parameter 1 is not of type "Element".');
             }
-            console.log('QQQ: resizeobserver observe: 4');
             var observations = this.observations_;
             // Do nothing if element is already being observed.
             if (observations.has(target)) {
                 return;
             }
-            console.log('QQQ: resizeobserver observe: 5');
             var rootNode = getControlledRootNode(target, target.ownerDocument);
-            console.log('QQQ: resizeobserver observe: 5');
             observations.set(target, new ResizeObservation(target, rootNode));
-            console.log('QQQ: resizeobserver observe: 7');
             var rootNodeTargets = this.rootNodes_.get(rootNode);
-            console.log('QQQ: resizeobserver observe: 8');
             if (!rootNodeTargets) {
                 rootNodeTargets = [];
-                console.log('QQQ: resizeobserver observe: 8.1');
                 this.rootNodes_.set(rootNode, rootNodeTargets);
-                console.log('QQQ: resizeobserver observe: 8.2');
                 this.controller_.addObserver(rootNode, this);
-                console.log('QQQ: resizeobserver observe: 8.3');
             }
-            console.log('QQQ: resizeobserver observe: 9');
             rootNodeTargets.push(target);
-            console.log('QQQ: resizeobserver observe: 10');
             if (this.intersectionObserver_) {
-                console.log('QQQ: resizeobserver observe: 11');
                 this.intersectionObserver_.observe(target);
             }
-            console.log('QQQ: resizeobserver observe: 12');
             // Force the update of observations.
             this.controller_.refresh(rootNode);
-            console.log('QQQ: resizeobserver observe: 13');
         };
         /**
          * Stops observing provided element.
@@ -979,21 +963,36 @@
             }
             if (mutationObserverSupported) {
                 this.mutationsObserver_ = new MutationObserver(this.refresh);
-                this.mutationsObserver_.observe(rootNode, {
-                    attributes: true,
-                    childList: true,
-                    characterData: true,
-                    subtree: true
-                });
+                try {
+                    this.mutationsObserver_.observe(rootNode, {
+                        attributes: true,
+                        childList: true,
+                        characterData: true,
+                        subtree: true
+                    });
+                }
+                catch (e) {
+                    // A Shadow DOM polyfill might fail when oberving a "synthetic"
+                    // ShadowRoot object. Ignore the error. The additional data
+                    // will arrive from the host observer below.
+                }
+                if (rootNode.host) {
+                    this.mutationsObserver_.observe(rootNode.host, {
+                        attributes: true,
+                        childList: true,
+                        characterData: true,
+                        subtree: true
+                    });
+                }
             }
             else {
                 rootNode.addEventListener('DOMSubtreeModified', this.refresh, true);
                 this.mutationEventsAdded_ = true;
             }
             // It's a shadow root. Monitor the host.
-            if (this.rootNode_.host) {
+            if (rootNode.host) {
                 this.hostObserver_ = new ResizeObserverSPI(this.refresh, this.globalController_, this);
-                this.hostObserver_.observe(this.rootNode_.host);
+                this.hostObserver_.observe(rootNode.host);
             }
             this.connected_ = true;
         };

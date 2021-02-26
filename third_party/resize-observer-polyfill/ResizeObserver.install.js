@@ -531,52 +531,35 @@ export function installResizeObserver(global) {
          * @returns {void}
          */
         ResizeObserverSPI.prototype.observe = function (target) {
-            console.log('QQQ: resizeobserver observe: 1');
             if (!arguments.length) {
                 throw new TypeError('1 argument required, but only 0 present.');
             }
             // Do nothing if current environment doesn't have the Element interface.
-            console.log('QQQ: resizeobserver observe: 2');
             if (typeof Element === 'undefined' || !(Element instanceof Object)) {
                 return;
             }
-            console.log('QQQ: resizeobserver observe: 3');
             if (!(target instanceof getWindowOf(target).Element)) {
                 throw new TypeError('parameter 1 is not of type "Element".');
             }
-            console.log('QQQ: resizeobserver observe: 4');
             var observations = this.observations_;
             // Do nothing if element is already being observed.
             if (observations.has(target)) {
                 return;
             }
-            console.log('QQQ: resizeobserver observe: 5');
             var rootNode = getControlledRootNode(target, target.ownerDocument);
-            console.log('QQQ: resizeobserver observe: 6');
             observations.set(target, new ResizeObservation(target, rootNode));
-            console.log('QQQ: resizeobserver observe: 7');
             var rootNodeTargets = this.rootNodes_.get(rootNode);
-            console.log('QQQ: resizeobserver observe: 8');
             if (!rootNodeTargets) {
                 rootNodeTargets = [];
-                console.log('QQQ: resizeobserver observe: 8.1');
                 this.rootNodes_.set(rootNode, rootNodeTargets);
-                console.log('QQQ: resizeobserver observe: 8.2');
                 this.controller_.addObserver(rootNode, this);
-                console.log('QQQ: resizeobserver observe: 8.3');
             }
-            console.log('QQQ: resizeobserver observe: 9');
             rootNodeTargets.push(target);
-            console.log('QQQ: resizeobserver observe: 10');
             if (this.intersectionObserver_) {
-                console.log('QQQ: resizeobserver observe: 10.1');
                 this.intersectionObserver_.observe(target);
-                console.log('QQQ: resizeobserver observe: 10.2');
             }
             // Force the update of observations.
-            console.log('QQQ: resizeobserver observe: 11');
             this.controller_.refresh(rootNode);
-            console.log('QQQ: resizeobserver observe: 12');
         };
         /**
          * Stops observing provided element.
@@ -894,16 +877,13 @@ export function installResizeObserver(global) {
          * @returns {void}
          */
         ResizeObserverController.prototype.addObserver = function (observer) {
-            console.log('QQQ: resizeobserver addObserver: 8.2.1');
             if (!~this.observers_.indexOf(observer)) {
                 this.observers_.push(observer);
             }
-            console.log('QQQ: resizeobserver addObserver: 8.2.2');
             // Add listeners if they haven't been added yet.
             if (!this.connected_) {
                 this.connect_();
             }
-            console.log('QQQ: resizeobserver addObserver: 8.2.3');
         };
         /**
          * Removes observer from observers list.
@@ -965,29 +945,23 @@ export function installResizeObserver(global) {
          * @returns {void}
          */
         ResizeObserverController.prototype.connect_ = function () {
-            console.log('QQQ: resizeobserver connect: 8.2.2.1');
             // Do nothing if running in a non-browser environment or if listeners
             // have been already added.
             if (!isBrowser || this.connected_) {
                 return;
             }
-            console.log('QQQ: resizeobserver connect: 8.2.2.2');
             var rootNode = this.rootNode_;
             var doc = rootNode.ownerDocument || rootNode;
             var win = doc.defaultView;
             // Subscription to the "Transitionend" event is used as a workaround for
             // delayed transitions. This way it's possible to capture at least the
             // final state of an element.
-            console.log('QQQ: resizeobserver connect: 8.2.2.3');
             rootNode.addEventListener('transitionend', this.onTransitionEnd_, true);
-            console.log('QQQ: resizeobserver connect: 8.2.2.4');
             if (win) {
                 win.addEventListener('resize', this.refresh, true);
             }
-            console.log('QQQ: resizeobserver connect: 8.2.2.5');
             if (mutationObserverSupported) {
                 this.mutationsObserver_ = new MutationObserver(this.refresh);
-                console.log('QQQ: resizeobserver connect: 8.2.2.6');//QQQQ: here!!!
                 try {
                     this.mutationsObserver_.observe(rootNode, {
                         attributes: true,
@@ -996,37 +970,26 @@ export function installResizeObserver(global) {
                         subtree: true
                     });
                 } catch (e) {
-                    console.log('QQQ: failed to mo.observe for rootNode:', e);
                     if (rootNode.host) {
-                        console.log('QQQ: fallback to host');
                         this.mutationsObserver_.observe(rootNode.host, {
                             attributes: true,
                             childList: true,
                             characterData: true,
                             subtree: true
                         });
-                        console.log('QQQ: fallback to host done');
                     }
                 }
-                console.log('QQQ: resizeobserver connect: 8.2.2.7');
             }
             else {
-                console.log('QQQ: resizeobserver connect: 8.2.2.8');
                 rootNode.addEventListener('DOMSubtreeModified', this.refresh, true);
                 this.mutationEventsAdded_ = true;
-                console.log('QQQ: resizeobserver connect: 8.2.2.9');
             }
             // It's a shadow root. Monitor the host.
-            console.log('QQQ: resizeobserver connect: 8.2.2.10');
             if (this.rootNode_.host) {
-                console.log('QQQ: resizeobserver connect: 8.2.2.10.1');
                 this.hostObserver_ = new ResizeObserverSPI(this.refresh, this.globalController_, this);
-                console.log('QQQ: resizeobserver connect: 8.2.2.10.2');
                 this.hostObserver_.observe(this.rootNode_.host);
-                console.log('QQQ: resizeobserver connect: 8.2.2.10.3');
             }
             this.connected_ = true;
-            console.log('QQQ: resizeobserver connect: 8.2.2.11');
         };
         /**
          * Removes DOM listeners.

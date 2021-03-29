@@ -691,9 +691,6 @@ export class AmpVideo extends AMP.BaseElement {
 
   /** @private */
   updateIsPlaying_(isPlaying) {
-    if (this.isManagedByPool_()) {
-      return;
-    }
     this.pauseHelper_.updatePlaying(isPlaying);
   }
 
